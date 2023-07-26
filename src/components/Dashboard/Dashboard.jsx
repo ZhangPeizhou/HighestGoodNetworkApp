@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -9,6 +10,8 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import { getUserProfile } from '../../actions/userProfile';
+import { ENDPOINTS } from '../../utils/URL';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -31,15 +34,19 @@ export function Dashboard(props) {
     getTimeZoneAPIKey();
   }, []);
 
+  const getuser = async () => {
+    const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+    const newUserProfile = response.data;
+    setUserProfile(newUserProfile);
+  };
+
   useEffect(() => {
-    const {
-      match: { params },
-      getUserProfile,
-    } = props;
-    if (params && params.userId && userId !== params.userId) {
-      getUserProfile(params.userId);
+    if (match.params && match.params.userId && userId !== match.params.userId) {
+      getUserProfile(match.params.userId);
+    } else {
+      getuser();
     }
-  }, [props]);
+  }, [match]);
 
   return (
     <Container fluid>
@@ -71,7 +78,11 @@ export function Dashboard(props) {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+          <Leaderboard
+            asUser={userId}
+            userTeams={userProfile?.teams}
+            userRole={userProfile?.role}
+          />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
