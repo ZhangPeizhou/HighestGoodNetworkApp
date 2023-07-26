@@ -7,8 +7,6 @@ import {
   fetchTeamMembersTaskSuccess,
   fetchTeamMembersTaskBegin,
   fetchTeamMembersTaskError,
-  deleteTaskNotificationSuccess,
-  deleteTaskNotificationBegin,
 } from 'components/TeamMemberTasks/actions';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 import * as types from '../constants/task';
@@ -37,8 +35,8 @@ export const fetchTeamMembersTask = (
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     const authUserId = authenticatedUserId ? authenticatedUserId : null;
 
-    if (shouldReload) {
-      dispatch(fetchTeamMembersTaskBegin());
+    if(shouldReload){
+      await dispatch(fetchTeamMembersTaskBegin());
     }
 
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
@@ -51,12 +49,13 @@ export const fetchTeamMembersTask = (
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId);
       });
-      dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
+      await dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
-      dispatch(fetchTeamMembersTaskSuccess(response.data));
+      await dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
-    dispatch(fetchTeamMembersTaskError());
+
+    await dispatch(fetchTeamMembersTaskError());
   }
 };
 
@@ -66,12 +65,9 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
   getState,
 ) => {
   try {
-    // dispatch(deleteTaskNotificationBegin());
-    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
-
-    //const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    //dispatch(deleteTaskNotificationBegin());
+    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
-    // window.location.reload(false);
   } catch (error) {
     // dispatch(deleteTaskNotificationError());
   }
@@ -110,22 +106,16 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, get
   newTask._id = _id;
 };
 
-export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => async (dispatch, getState) => {
+export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatch, getState) => {
   let status = 200;
   try {
     const state = getState();
-    
-    let oldTask 
-    if(prevTask){
-      oldTask = prevTask
-    }else{
-      oldTask = selectUpdateTaskData(state, taskId);
-    }
-    
+    const oldTask = selectUpdateTaskData(state, taskId);
+    //dispatch(fetchTeamMembersTaskBegin());
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
+      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
     }
