@@ -65,7 +65,7 @@ export const Dashboard = props => {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isDashboard={true} isPopup={popup} asUser={userId} />
+              {/* <WeeklySummary isDashboard={true} isPopup={popup} asUser={userId} /> */}
             </div>
           </div>
         </Col>
@@ -78,15 +78,15 @@ export const Dashboard = props => {
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} setPopup={setPopup} />
+                {/* <WeeklySummary asUser={userId} setPopup={setPopup} /> */}
               </div>
             </div>
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            <Timelog isDashboard={true} asUser={userId} passSummaryBarData={setSummaryBarData} />
+            {/* <Timelog isDashboard={true} asUser={userId} passSummaryBarData={setSummaryBarData} /> */}
           </div>
-          <Badge userId={userId} role={props.auth.user.role} />
+          {/* <Badge userId={userId} role={props.auth.user.role} /> */}
         </Col>
       </Row>
     </Container>

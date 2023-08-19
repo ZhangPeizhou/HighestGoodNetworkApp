@@ -1,4 +1,4 @@
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import { getLeaderboardData, postLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import { connect } from 'react-redux';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
@@ -61,4 +61,4 @@ const mapStateToProps = state => {
     isVisible: user.role === 'Volunteer' || user.isVisible,
   };
 };
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);
+export default connect(mapStateToProps, { getLeaderboardData, postLeaderboardData, getOrgData })(Leaderboard);

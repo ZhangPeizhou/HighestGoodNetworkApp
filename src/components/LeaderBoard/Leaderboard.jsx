@@ -11,6 +11,7 @@ import {
 } from 'utils/leaderboardPermissions';
 import moment from 'moment';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
+
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
   const prevDeps = useRef(deps);
@@ -30,6 +31,7 @@ function useDeepEffect(effectFunc, deps) {
 
 const LeaderBoard = ({
   getLeaderboardData,
+  postLeaderboardData,
   getOrgData,
   leaderBoardData,
   loggedInUser,
@@ -40,7 +42,7 @@ const LeaderBoard = ({
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
-  const todaysDate = moment().tz('America/Los_Angeles').format('YYYY-MM-DD');;
+  const todaysDate = moment().tz('America/Los_Angeles').format('YYYY-MM-DD');
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
@@ -139,6 +141,20 @@ const LeaderBoard = ({
     );
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // opening the modal
+  const trophyIconToggle = item => {
+    setModalOpen(item.personId);
+  }
+
+  // deleting the icon fron that and only that user
+  const handleRemovingTrophyIcon = (item) => {
+    setModalOpen(false);
+    postLeaderboardData(item.personId)
+
+  }
+
   return (
     <div>
       <h3>
@@ -233,7 +249,7 @@ const LeaderBoard = ({
               </td>
             </tr>
             {leaderBoardData.map((item, key) => {
-              const durationSinceStarted = calculateDurationBetweenDates(todaysDate, item.createdDate.split('T')[0])
+              const durationSinceStarted = calculateDurationBetweenDates(todaysDate, item?.createdDate?.split('T')[0])
               return (
                 <tr key={key}>
                   <td className="align-middle">
@@ -313,13 +329,43 @@ const LeaderBoard = ({
                       {item.name}
                     </Link>
                     &nbsp;&nbsp;&nbsp;
-                    {showTrophyIcon(todaysDate, item.createdDate.split('T')[0]) &&
-                      <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '18px' }}>
-                        {
-                          <p style={{ fontSize: '10px', marginLeft: '5px' }}>
-                            {durationSinceStarted.months >= 5.8 && durationSinceStarted.months <= 7 ? '6M' : (durationSinceStarted.years >= 0.8 ? Math.round(durationSinceStarted.years) + 'Y' : null)}
-                          </p>}
-                      </i>}
+
+                    <div>
+                      <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
+                        <ModalHeader toggle={trophyIconToggle}>Followed Up??</ModalHeader>
+                        <ModalBody>
+                          <p>Are you sure you want to delete this icon?</p>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button color="danger" onClick={() => {
+                            handleRemovingTrophyIcon(item)
+                          }}>
+                            Delete
+                          </Button>{' '}
+                          <Button variant="secondary" onClick={trophyIconToggle}>
+                            Cancel
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+                    </div>
+
+                    <div>
+                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                        item?.trophyIconPresent === true &&
+                        (
+                          <div>
+                            <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '18px' }} onClick={() => trophyIconToggle(item)}>
+                              {
+                                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                                  {durationSinceStarted.months >= 5.8 && durationSinceStarted.months <= 7 ? '6M' : (durationSinceStarted.years >= 0.8 ? Math.round(durationSinceStarted.years) + 'Y' : null)}
+                                </p>}
+                            </i>
+                          </div>
+                        )
+                      }
+                    </div>
+
+
                     &nbsp;&nbsp;&nbsp;
                     {isAdmin && !item.isVisible && (
                       <i className="fa fa-eye-slash" title="User is invisible"></i>
@@ -347,11 +393,28 @@ const LeaderBoard = ({
                 </tr>
               )
             }
+
             )}
+            {/* <Modal isOpen={modalOpen} toggle={toggle}>
+              <ModalHeader toggle={toggle}>Followed Up?</ModalHeader>
+              <ModalBody>
+                <p>{iconModalContent}</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" onClick={() => {
+
+                }}>
+                  Delete
+                </Button>{' '}
+                <Button variant="primary" onClick={() => setModalOpen(false)}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </Modal> */}
           </tbody>
         </Table>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -68,10 +68,10 @@ export const ENDPOINTS = {
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
-  `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
+    `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
-  `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
+    `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
@@ -86,6 +86,8 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+
+  TROPHY_ICON: (userId) => `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
