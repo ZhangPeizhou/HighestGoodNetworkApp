@@ -39,7 +39,7 @@ const PopupText = props => {
       <div className="m-cover">
         <div className="m-header">
           {props.title}
-          <div className="save">
+          <div className="save" data-testid="backup-times">
             {pressed >= 0
               ? `Press ${pressed > 1 ? `${pressed} times` : ``} to backup this data.`
               : 'Backup successful '}{' '}
@@ -56,7 +56,7 @@ const PopupText = props => {
           </div>
         </div>
 
-        <div className="m-body">
+        <div className="m-body" data-testid="text-area">
           <Editor
             init={{
               menubar: false,

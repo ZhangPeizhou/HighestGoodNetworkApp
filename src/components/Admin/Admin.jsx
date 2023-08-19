@@ -6,12 +6,11 @@ import './style.css';
 
 const Admin = props => {
   useEffect(() => {
-    console.log('props', props);
     props.fetchAllPopupEditor();
   }, [1]);
 
   const [keyword, setKeyword] = useState('');
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
 
   const search = () => {
     if (keyword.length > 0) {
@@ -33,10 +32,11 @@ const Admin = props => {
             className="form-control"
             onChange={e => setKeyword(e.target.value)}
             value={keyword}
+            data-testid="input-admin"
           />
           <div className="input-group-append">
-            <button className="btn btn-outline-primary" type="button" onClick={search}>
-              <i className="fa fa-search" aria-hidden="true"></i>
+            <button className="btn btn-outline-primary" type="button" data-testid="search-button" onClick={search}>
+              <i className="fa fa-search" aria-hidden="true" ></i>
             </button>
           </div>
         </div>
