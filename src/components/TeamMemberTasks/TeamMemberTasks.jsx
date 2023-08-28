@@ -6,7 +6,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import { getTeamMemberTasksData } from './selectors';
+import getTeamMemberTasksData from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { fetchAllManagingTeams } from '../../actions/team';

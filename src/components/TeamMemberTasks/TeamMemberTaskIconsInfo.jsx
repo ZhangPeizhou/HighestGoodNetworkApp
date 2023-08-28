@@ -5,7 +5,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { boxStyle } from 'styles';
 import './style.css';
-import { infoTaskIconContent } from './infoTaskIconContent';
+import infoTaskIconContent from './infoTaskIconContent';
 
 const TeamMemberTaskInfo = React.memo(() => {
     const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
