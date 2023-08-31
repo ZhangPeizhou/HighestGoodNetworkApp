@@ -10,13 +10,17 @@ import '../../App.css';
 import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import axios from "axios";
+import { ENDPOINTS } from '../../utils/URL';
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);
+  const  [teams, setTeams] = useState([])
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
+  //console.log("all team", props.team)
   const toggle = () => {
     setPopup(!popup);
     setTimeout(() => {
@@ -27,10 +31,23 @@ export const Dashboard = props => {
     }, 150);
   };
 
+  const getTeamData = async () =>{
+    const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+    const newUserProfile = response.data;
+    setTeams(newUserProfile.teams)
+    console.log("team data in here?", newUserProfile.teams);
+  }
+
   useEffect(() => {
     props.getTimeZoneAPIKey();
-  }, []);
 
+    getTeamData();
+  
+
+
+
+  }, []);
+  console.log("teams?", teams)
   useEffect(() => {
     if (props.match.params && props.match.params.userId && userId != props.match.params.userId) {
       userId = props.match.params.userId;
@@ -72,7 +89,15 @@ export const Dashboard = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+
+        <select>
+        {
+          props.auth.user.role === "Administrator" && teams != undefined && teams.map((team) => {
+            return <option>{team.teamName}</option>
+        })}
+        </select>
+      
+          <Leaderboard asUser={userId} selected={"Team 1"}/>
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -95,6 +120,7 @@ export const Dashboard = props => {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  team: state.team
 });
 
 export default connect(mapStateToProps, {

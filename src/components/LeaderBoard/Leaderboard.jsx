@@ -57,6 +57,8 @@ const LeaderBoard = ({
     } catch {}
   }, [leaderBoardData]);
 
+
+  console.log("leadership data", leaderBoardData)
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
 
