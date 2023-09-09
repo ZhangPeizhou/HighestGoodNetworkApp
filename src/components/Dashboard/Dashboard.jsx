@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import Leaderboard from '../LeaderBoard';
+import LeaderBoardFilter from 'components/LeaderBoard/LeaderBoardFilter';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
@@ -9,6 +10,11 @@ import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
+import {
+
+  getTeamMembers
+
+} from '../../actions/allTeamsAction';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import axios from "axios";
 import { ENDPOINTS } from '../../utils/URL';
@@ -17,7 +23,8 @@ export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);
-  const  [teams, setTeams] = useState([])
+  const  [teams, setTeams] = useState([]);
+  const [teamMembers, setTeamMembers ] = useState([]);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   //console.log("all team", props.team)
@@ -36,6 +43,14 @@ export const Dashboard = props => {
     const newUserProfile = response.data;
     setTeams(newUserProfile.teams)
     console.log("team data in here?", newUserProfile.teams);
+  }
+
+  const selectHandler = async (e) => {
+    console.log("dropdown",e.target.value);
+
+    const data = await props.getTeamMembers(e.target.value);
+    console.log("team members?", props.teamsTeamMembers.teamMembers)
+    setTeamMembers( props.teamsTeamMembers.teamMembers)
   }
 
   useEffect(() => {
@@ -90,14 +105,16 @@ export const Dashboard = props => {
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
 
-        <select>
+        <select onChange={selectHandler}>
         {
           props.auth.user.role === "Administrator" && teams != undefined && teams.map((team) => {
-            return <option>{team.teamName}</option>
+            return <option value={team._id}>{team.teamName}</option>
         })}
         </select>
-      
-          <Leaderboard asUser={userId} selected={"Team 1"}/>
+          {
+            teamMembers.length !== 0? <LeaderBoardFilter data={teamMembers} /> : <Leaderboard asUser={userId} selected={"Team 1"}/>
+          }
+          
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -120,9 +137,13 @@ export const Dashboard = props => {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  team: state.team
+  team: state.team,
+  teamsTeamMembers: state.teamsTeamMembers
+
 });
 
 export default connect(mapStateToProps, {
   getTimeZoneAPIKey,
+  getTeamMembers
+
 })(Dashboard);
