@@ -15,7 +15,7 @@ export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);
-  let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
+  let userId = props.match?.params?.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
     setPopup(!popup);
@@ -64,6 +64,7 @@ export const Dashboard = props => {
               onClick={toggle}
               onKeyDown={toggle}
               tabIndex="0"
+              data-testid="button-summary"
             >
               <WeeklySummary isDashboard={true} isPopup={popup} asUser={userId} />
             </div>

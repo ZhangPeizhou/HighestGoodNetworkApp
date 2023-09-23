@@ -13,14 +13,7 @@ const mockStore = configureStore([thunk]);
 describe('Dashboard ', () => {
   let store;
   beforeEach(() => {
-    store = mockStore({
-      auth: mockState.auth,
-      userProfile: mockState.userProfile,
-      timeEntries: mockState.timeEntries,
-      userProjects: mockState.userProjects,
-      weeklySummaries: mockState.weeklySummaries,
-      role: mockState.role,
-    });
+    store = mockStore({});
     store.dispatch = jest.fn();
     //check what props should be being passed seems the getUserProfile isnt there see if your using renderWithRouterMatch correctly
     //What props are you sending in?  I dont see them looks like you will need to create props with any props that are being mapped from the actions do that and this should work.
