@@ -243,7 +243,7 @@ export const Header = props => {
                   </span>
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
+                  <DropdownItem header>Hi {firstName}</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}

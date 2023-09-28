@@ -29,7 +29,7 @@ const PauseAndResumeButton = props => {
   }, [props.userProfile?.isActive]);
 
   /**
-   * Call back on Pause confirmation button click to trigger the action to update user status
+   * Call back on Pause confirmation button click to trigger the action to update user status 
    */
   const pauseUser = async reActivationDate => {
     await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
