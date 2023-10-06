@@ -64,6 +64,7 @@ export class WeeklySummariesReport extends Component {
       fetchAllBadges,
       getInfoCollections,
       hasPermission,
+      auth,
     } = this.props;
 
     // 1. fetch report
@@ -75,7 +76,7 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = this.canPutUserProfileImportantInfo;
+    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -120,12 +121,21 @@ export class WeeklySummariesReport extends Component {
 
     if (teamCodeSet.length !== 0) {
       teamCodeSet.forEach((code, index) => {
-        this.teamCodes[index] = { value: code, label: code };
+        const codeLabel = `${code} (${
+          summariesCopy.filter(summary => summary.teamCode === code).length
+        })`;
+        this.teamCodes[index] = { value: code, label: codeLabel };
       });
       colorOptionSet.forEach((option, index) => {
         this.colorOptions[index] = { value: option, label: option };
       });
     }
+
+    const noCodeLabel = `Select All With NO Code (${
+      summariesCopy.filter(summary => summary.teamCode === '').length
+    })`;
+    const sortedTeamCodes = this.teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+    this.teamCodes = [...sortedTeamCodes, { value: '', label: noCodeLabel }];
 
     this.setState({
       error,
@@ -336,6 +346,7 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
+              className="multi-select-filter"
               options={this.teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -346,7 +357,8 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
-              options={this.colorOptions}
+              className="multi-select-filter"
+              options={this.colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))}
               value={selectedColors}
               onChange={e => {
                 this.handleSelectColorChange(e);
@@ -440,12 +452,13 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
+  auth: state.auth,
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
-  hasPermission: () => hasPermission(),
+  hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
 });
 
