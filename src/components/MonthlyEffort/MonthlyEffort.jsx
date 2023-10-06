@@ -5,14 +5,15 @@ export class MonthlyEffort extends React.Component {
   state = {};
 
   async componentDidMount() {
-    let userID = this.props.auth.user.userid;
+    const userID = this.props.auth.user.userid;
     this.setState({ userID });
   }
+
   render() {
     return (
       <div className="card-body text-white">
         <h5 className="card-title">Monthly Efforts</h5>
-        <div></div>
+        <div />
       </div>
     );
   }
