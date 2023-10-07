@@ -1,1 +1,2 @@
-export { default } from './MonthlyEffort';
+// eslint-disable-next-line import/prefer-default-export
+export { default as MonthlyEffort } from './MonthlyEffort';

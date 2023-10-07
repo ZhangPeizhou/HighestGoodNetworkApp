@@ -1,13 +1,15 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { MonthlyEffort } from './MonthlyEffort';
 
 describe('Monthly Effort component structure', () => {
-  let mountedMonthlyEffort, props;
+  let mountedMonthlyEffort;
   beforeEach(() => {
-    props = {
+    const props = {
       auth: { isAuthenticated: true, user: { userid: 'abcdef' } },
     };
+    /* eslint-disable react/jsx-props-no-spreading */
     mountedMonthlyEffort = shallow(<MonthlyEffort {...props} />);
   });
 
