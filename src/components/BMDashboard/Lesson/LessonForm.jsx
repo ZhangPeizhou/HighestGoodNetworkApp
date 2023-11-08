@@ -1,26 +1,17 @@
 import { useState } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
+import { useParams } from 'react-router-dom';
 import Noimg from './images/Noimg3.jpg';
 
 const style = {
   backgroundImage: `url(${Noimg})`,
 };
 function LessonForm() {
+  // TODO use projectId to query project info like name?
+  const { projectId } = useParams();
   const [selectedFile, setSelectedFile] = useState(null);
-  // TODO fix handleDrop
-  // const handleDrop = (e) => {
-  //   e.preventDefault();
-  //   e.stopPropagation(); // Prevent the default behavior
-  //   console.log("handledrop")
-  //   const file = e.target.files[0]; // Get the selected file
-  //   setSelectedFile(file);
-  // };
 
-  // const handleDragOver = e => {
-  //   e.preventDefault();
-  //   // console.log("hi")
-  // };
   const handleFileSelection = e => {
     const file = e.target.files[0]; // Get the selected file
     setSelectedFile(file); // Update the state with the selected file
@@ -38,13 +29,20 @@ function LessonForm() {
     // console.log("hi Keypress")
   };
 
-  // const handleMouseDown = () => {
-  //   console.log("hi mousedown")
-  // };
+  const handleDragOver = e => {
+    e.preventDefault();
+  };
 
-  // const handleTouchStart = () => {
-  //   console.log("hi touchstart")
-  // };
+  const handleDrop = e => {
+    e.preventDefault();
+    const fileInput = document.getElementById('fileInput');
+    const file = e.dataTransfer.files[0];
+    setSelectedFile(file);
+    // Reset the file input value to clear the selection
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
   return (
     <div className="MasterContainer">
       <div className="FormContainer">
@@ -62,7 +60,7 @@ function LessonForm() {
             <Form.Group controlId="exampleForm.ControlInput1">
               {/* Can have multiple tags. Needs to add tag for belonging project name automatically. */}
               <Form.Label>Add tag</Form.Label>
-              <Form.Control type="text" placeholder="Input tag for the lesson" />
+              <Form.Control type="text" placeholder={`Project id= ${projectId}`} />
             </Form.Group>
           </div>
           <div className="FormSelectContainer">
@@ -70,7 +68,7 @@ function LessonForm() {
               <Form.Group controlId="Form.ControlSelect1">
                 <Form.Label>Belongs to</Form.Label>
                 <FormControl as="select" aria-label="Default select example">
-                  <option>Project 1</option>
+                  <option>Project id= {projectId}</option>
                   <option value="1">One</option>
                   <option value="2">Two</option>
                   <option value="3">Three</option>
@@ -104,11 +102,9 @@ function LessonForm() {
                 tabIndex={0}
                 onClick={handleClick}
                 onKeyPress={handleKeyPress}
-                // onMouseDown={handleMouseDown}
-                // onTouchStart={handleTouchStart}
-                // onDrop={handleDrop}
-                // onDragOver={handleDragOver}
-                className="dragAndDropStyle"
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className={`dragAndDropStyle ${selectedFile ? 'fileSelected' : ''}`}
               >
                 {selectedFile ? (
                   <p>Selected File: {selectedFile.name}</p>
