@@ -1,13 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllRoles } from '../../../actions/role';
 import Noimg from './images/Noimg3.jpg';
 
 const style = {
   backgroundImage: `url(${Noimg})`,
 };
 function LessonForm() {
+  const dispatch = useDispatch();
+  const roles = useSelector(state => state.role.roles);
+
+  useEffect(() => {
+    // Dispatch the action to fetch roles when the component mounts
+    dispatch(getAllRoles());
+  }, [dispatch]);
+
+  // console.log('Roles in component:', roles);
   // TODO use projectId to query project info like name?
   const { projectId } = useParams();
   const [selectedFile, setSelectedFile] = useState(null);
@@ -81,9 +92,11 @@ function LessonForm() {
                 <Form.Label>View by</Form.Label>
                 <FormControl as="select" aria-label="Default select example">
                   <option>All</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                  {roles.map(role => (
+                    <option key={role._id} value={role.roleName}>
+                      {role.roleName}
+                    </option>
+                  ))}
                 </FormControl>
               </Form.Group>
             </div>
