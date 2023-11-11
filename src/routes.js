@@ -44,6 +44,7 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
+import ETUpdateLog from 'components/BMDashboard/ET/ETUpdateLog';
 
 // BM Dashboard
 
@@ -168,6 +169,7 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/updateET" component={ETUpdateLog} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
