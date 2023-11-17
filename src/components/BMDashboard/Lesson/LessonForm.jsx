@@ -17,6 +17,7 @@ function LessonForm() {
   const projects = useSelector(state => state.allProjects.projects);
   const [LessonFormtags, setLessonFormTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
+  const { projectId } = useParams();
 
   const handleTagInput = e => {
     e.preventDefault();
@@ -35,18 +36,27 @@ function LessonForm() {
     const newTags = LessonFormtags.filter((_, index) => index !== tagIndex);
     setLessonFormTags(newTags);
   };
+  const removePreviousProject = prevproject => {
+    const newTags = LessonFormtags.filter(project => project !== prevproject);
+    setLessonFormTags(newTags);
+  };
   useEffect(() => {
     // Dispatch the action to fetch roles when the component mounts
     dispatch(getAllRoles());
-  }, [dispatch]);
-
-  useEffect(() => {
     // Dispatch the action to fetch projects when the component mounts
     dispatch(fetchAllProjects());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (projectId) {
+      const projectname = `Project ${projectId}`;
+      setLessonFormTags([projectname]);
+    }
+  }, []);
+
   const fileInputRef = useRef(null);
-  const { projectId } = useParams();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [prevselectedProject, setprevSelectedProject] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null); // Track selected project
   const handleFileSelection = e => {
     const file = e.target.files[0]; // Get the selected file
@@ -86,21 +96,20 @@ function LessonForm() {
   };
 
   useEffect(() => {
-    // Set the LessonFormtags to include the selected project without resetting existing tags
-    if (selectedProject) {
-      setLessonFormTags(tags => {
-        // Check if the selected project is already in tags
-        const hasSelectedProject = tags.includes(selectedProject);
-
-        // If not, add it to the tags array
-        if (!hasSelectedProject) {
-          return [...tags, selectedProject];
-        }
-
-        return tags; // If already present, no change needed
-      });
+    if (selectedProject && prevselectedProject !== selectedProject) {
+      // Remove the tag for the previously selected project
+      if (prevselectedProject) {
+        removePreviousProject(prevselectedProject);
+      }
+      setprevSelectedProject(selectedProject);
+      // Check if the selected project is already in tags
+      const hasSelectedProject = LessonFormtags.includes(selectedProject);
+      // If not, add it to the tags array
+      if (!hasSelectedProject) {
+        setLessonFormTags(tags => [...tags, selectedProject]);
+      }
     }
-  }, [selectedProject]);
+  }, [selectedProject, prevselectedProject]);
 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [video, setVideo] = useState(null);
@@ -201,9 +210,9 @@ function LessonForm() {
                   className="form-control"
                 />
                 <div className="input-group-append">
-                  <Button size="sm" type="button" onClick={addTag} className="btn">
+                  {/* <Button size="sm" type="button" onClick={addTag} className="btn">
                     Add
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
               <div className="TagsDiv">
@@ -233,8 +242,9 @@ function LessonForm() {
                   onChange={handleProjectChange}
                   as="select"
                   aria-label="Default select example"
+                  disabled={!!projectId}
                 >
-                  {projectId && <option>Project id= {projectId}</option>}
+                  {projectId && <option>Project {projectId}</option>}
                   {projects.map(project => (
                     <option key={project._id} value={project.projectName}>
                       {project.projectName}

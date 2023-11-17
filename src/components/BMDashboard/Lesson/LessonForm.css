@@ -102,10 +102,10 @@
   display: flex;
   align-items: center;
   min-width: 50px;
-  padding: 4px 8px;
+  padding: 4px 10px;
   margin:1px;
-  
-  border: 1px solid black;
+  background-color: #FAFAFA;
+  border: 1px solid #EEEEEE;
   border-radius: 4px;
   overflow: hidden;
   word-break: break-all;
@@ -113,7 +113,7 @@
 
 .TagSpan {
   flex: 1;
-  margin-right: 65px; /* Adjust the margin as needed */
+  margin-right: 25px; /* Adjust the margin as needed */
 }
 
 .removeTagBTN {
