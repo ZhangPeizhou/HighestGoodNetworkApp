@@ -99,46 +99,43 @@ function LessonForm() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       const newVideo = document.createElement('video');
       newVideo.srcObject = stream;
+      newVideo.style.width = '100%';
+      newVideo.style.height = '100%';
+      newVideo.style.zIndex = '999';
+      newVideo.setAttribute('playsinline', '');
+      newVideo.setAttribute('autoplay', '');
+      // Get the container element to append the video
+      const videoContainer = document.getElementById('videoContainer');
+      // Append the video to the container
+      videoContainer.appendChild(newVideo);
       // Set the video element in the state before playing it
       setVideo(newVideo);
-      // Add the video element to the DOM
-      document.body.appendChild(newVideo);
-      newVideo.addEventListener('loadedmetadata', async () => {
-        await newVideo.play();
-        // Display the live camera feed
-        setIsPreviewing(true);
+      // Wait for the loadedmetadata event to ensure video dimensions are available
+      await new Promise(resolve => {
+        newVideo.addEventListener('loadedmetadata', resolve);
       });
-      // Clean up the video element when done
-      newVideo.addEventListener('ended', () => {
-        setIsPreviewing(false);
-        setVideo(null);
-        stream.getTracks().forEach(track => track.stop());
-        document.body.removeChild(newVideo);
-      });
+      // Display the live camera feed
+      setIsPreviewing(true);
     } catch (error) {
       // console.error('Error accessing the camera:', error);
     }
   };
-
   const handleCapture = async () => {
     try {
       if (!video) {
         // console.error('Video element not found.');
         return;
       }
-
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
-
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Stop the stream and remove the video element
+      // Stop the stream
       video.srcObject.getTracks().forEach(track => track.stop());
-      setVideo(null);
-
+      // Remove the video element from the 'videoContainer'
+      const videoContainer = document.getElementById('videoContainer');
+      videoContainer.removeChild(video);
       // Convert the canvas content to a blob and create a File object
       canvas.toBlob(blob => {
         const file = new File([blob], 'capturedPhoto.png', { type: 'image/png' });
@@ -149,6 +146,20 @@ function LessonForm() {
       // console.error('Error capturing the photo:', error);
     }
   };
+
+  let content;
+  if (isPreviewing) {
+    content = <div id="videoContainer" />;
+  } else if (selectedFile) {
+    content = <p>Selected File: {selectedFile.name}</p>;
+  } else {
+    content = (
+      <div className="TextAndImageDiv">
+        <div className="ImageDiv" style={style} />
+        <p className="DragandDropText">Drag and drop your file here</p>
+      </div>
+    );
+  }
   return (
     <div className="MasterContainer">
       <div className="FormContainer">
@@ -266,15 +277,8 @@ function LessonForm() {
                 onDrop={handleDrop}
                 className={`dragAndDropStyle ${selectedFile ? 'fileSelected' : ''}`}
               >
-                {selectedFile ? (
-                  <p>Selected File: {selectedFile.name}</p>
-                ) : (
-                  <div className="TextAndImageDiv">
-                    <div className="ImageDiv" style={style} />
-
-                    <p className="DragandDropText">Drag and drop your file here</p>
-                  </div>
-                )}
+                <div id="videoContainer" />
+                {content}
               </div>
             </Form.Group>
           </div>
