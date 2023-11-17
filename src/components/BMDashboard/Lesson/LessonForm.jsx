@@ -84,10 +84,21 @@ function LessonForm() {
     const selectedProjectId = e.target.value;
     setSelectedProject(selectedProjectId);
   };
+
   useEffect(() => {
-    // Set the LessonFormtags to be an array containing only the selected project
+    // Set the LessonFormtags to include the selected project without resetting existing tags
     if (selectedProject) {
-      setLessonFormTags([selectedProject]);
+      setLessonFormTags(tags => {
+        // Check if the selected project is already in tags
+        const hasSelectedProject = tags.includes(selectedProject);
+
+        // If not, add it to the tags array
+        if (!hasSelectedProject) {
+          return [...tags, selectedProject];
+        }
+
+        return tags; // If already present, no change needed
+      });
     }
   }, [selectedProject]);
 
