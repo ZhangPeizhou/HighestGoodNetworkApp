@@ -244,6 +244,7 @@ function LessonForm() {
                   aria-label="Default select example"
                   disabled={!!projectId}
                 >
+                  {!selectedProject && <option>Select Project</option>}
                   {projectId && <option>Project {projectId}</option>}
                   {projects.map(project => (
                     <option key={project._id} value={project.projectName}>
