@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { Button, Table, Card, CardBody } from 'reactstrap'
 
 function MaterialTypesList() {
-  const buildingInventoryTypes = useSelector(state => state.buildingInventoryTypes)
+  const buildingInventoryTypes = useSelector(state => state.buildingInventoryTypes.fetchedResult)
   const [showTable, setShowTable] = useState(true);
   return (
     <div>

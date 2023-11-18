@@ -125,7 +125,8 @@ export const ENDPOINTS = {
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
-  BM_BUILDING_INVENTORY_TYPES: `${APIEndpoint}/bm/buildingInventoryTypes`
+  BM_BUILDING_INVENTORY_TYPES: `${APIEndpoint}/bm/buildingInventoryTypes`,
+  BM_POST_BUILDING_INVENTORY_TYPE: `${APIEndpoint}/bm/postBuildingInventoryType`
 };
 
 export const ApiEndpoint = APIEndpoint;

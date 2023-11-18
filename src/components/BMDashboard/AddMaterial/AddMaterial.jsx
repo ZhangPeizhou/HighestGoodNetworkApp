@@ -3,13 +3,16 @@ import { Col, Container, Form, FormGroup, Input, Label, Button, CardBody, Card }
 import './AddMaterial.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchAllBuildingInventoryMaterialTypes } from 'actions/bmdashboard/bmInventoryTypeActions';
+import { fetchAllBuildingInventoryMaterialTypes, postBuildingInventoryType, resetPostBuildingInventoryTypeResult } from 'actions/bmdashboard/bmInventoryTypeActions';
 import { useState } from 'react';
 import MaterialTypesList from './MaterialTypesList';
+import Joi from 'joi';
+import { toast } from 'react-toastify';
 
 function AddMaterial() {
   const dispatch = useDispatch();
-  const buildingInventoryTypes = useSelector(state => state.buildingInventoryTypes)
+  const buildingInventoryTypes = useSelector(state => state.buildingInventoryTypes.fetchedResult)
+  const postBuildingInventoryResult = useSelector(state => state.buildingInventoryTypes.postedResult)
   const [material, setMaterial] = useState({
     name: '',
     unit: '',
@@ -17,21 +20,118 @@ function AddMaterial() {
     description: ''
 
   })
+  const [validations, setValidations] = useState({
+    name: '',
+    unit: '',
+    customUnit: '',
+    description: '',
+    commonUnit: '',
+    total: true
+  })
+
+
+  useEffect(() => {
+    console.log('postBuildingInventoryResult', postBuildingInventoryResult)
+    if (postBuildingInventoryResult?.error == true) {
+      toast.error(`${postBuildingInventoryResult?.result}`);
+      dispatch(fetchAllBuildingInventoryMaterialTypes());
+      dispatch(resetPostBuildingInventoryTypeResult());
+    }
+    else if (postBuildingInventoryResult?.result != null) {
+      toast.success(`Created a new Material Type "${postBuildingInventoryResult?.result.name}" successfully`);
+      dispatch(fetchAllBuildingInventoryMaterialTypes());
+      dispatch(resetPostBuildingInventoryTypeResult());
+    }
+
+  }, [postBuildingInventoryResult])
+
   const changeHandler = (e) => {
     let field = e.target.name;
     let value = e.target.value;
     material[field] = value;
     if (field == 'customUnit') {
       if (value) {
-        material.unit = 'customUnit'
+        material.unit = ''
       }
     }
     if (field == 'unit') {
-      if (value != 'customUnit') {
+      if (value != '') {
         material.customUnit = ''
       }
     }
     setMaterial({ ...material });
+    validationHandler(field, value)
+  }
+  const obj = {
+    name: Joi.string()
+      .min(3)
+      .max(50)
+      .required(),
+    description: Joi.string()
+      .min(10)
+      .max(150)
+      .required(),
+    unit: Joi.string().allow('').optional(),
+    customUnit: Joi.string().allow('').optional()
+  }
+  const schema = Joi.object(obj).options({ abortEarly: false });
+
+  const submitHandler = () => {
+    let error = validationHandler(null, null, true);
+    if (!error) {
+      dispatch(postBuildingInventoryType(material));
+    }
+  }
+  const validationHandler = (field, value, complete) => {
+    let validate;
+    let propertySchema;
+    let validationErrorFlag = false;
+    if (complete) {
+      validate = schema.validate(material);
+    }
+    else {
+      propertySchema = Joi.object({ [field]: obj[field] });
+      validate = propertySchema.validate({ [field]: value });
+    }
+
+    if (!material.unit && !material.customUnit) {
+      if (complete || field == 'unit' || field == 'customUnit') {
+        validations.commonUnit = 'At least one of "unit" or "customUnit" must have a valid value';
+        validationErrorFlag = true;
+      }
+    } else if (material.unit && material.customUnit) {
+      if (complete || field == 'unit' || field == 'customUnit') {
+        validations.commonUnit = 'Only one of the unit should have a value';
+        validationErrorFlag = true;
+      }
+    }
+    else {
+      validations.commonUnit = '';
+    }
+
+    if (validate.error) {
+      for (let i = 0; i < validate.error.details.length; i++) {
+        let errorObj = validate.error.details[i];
+        if (errorObj.context.peersWithLabels) {
+          for (let j = 0; j < errorObj.context.peersWithLabels.length; j++) {
+            validations[errorObj.context.peersWithLabels[j]] = errorObj.message;
+            validationErrorFlag = true;
+          }
+        }
+        else
+          validations[errorObj.context.label] = errorObj.message;
+        validationErrorFlag = true;
+      }
+    }
+    else {
+      if (!complete) {
+        validations[field] = '';
+      }
+    }
+
+    validations.total = validationErrorFlag;
+    setValidations({ ...validations });
+    return validationErrorFlag;
   }
   useEffect(() => {
     dispatch(fetchAllBuildingInventoryMaterialTypes());
@@ -80,7 +180,21 @@ function AddMaterial() {
                         onChange={(e) => changeHandler(e)}
                         placeholder='Material Name'
                       />
+
                     </Col>
+
+                    {
+                      validations.name != ""
+                      &&
+                      <Label
+                        for="materialNameErr"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {'Material ' + validations.name}
+                      </Label>
+                    }
+
                   </FormGroup>
 
                   <FormGroup row className='align-items-center justify-content-start'>
@@ -99,10 +213,10 @@ function AddMaterial() {
                         value={material.unit}
                         onChange={(e) => changeHandler(e)}
                       >
-                        <option value={'customUnit'} key={'customUnit'}>--Please select unit--</option>
+                        <option value={''} key={'customUnit'}>--Please select unit--</option>
                         {
                           buildingInventoryTypes.result?.map((matType) =>
-                            <option key={matType._id} value={matType.name}>{matType.name}</option>
+                            <option key={matType._id} value={matType.unit}>{matType.unit}</option>
                           )
                         }
                       </Input>
@@ -119,7 +233,7 @@ function AddMaterial() {
                         Custom Material Unit
                         <br></br>
                         <i className='materialFormSmallText'>
-                          <sm>  Please note that , you can either select a unit from the list or enter a cutom unit of your choice </sm>
+                          Please note that , you can either select a unit from the list or enter a cutom unit of your choice
                         </i>
                       </div>
                     </Label>
@@ -133,6 +247,30 @@ function AddMaterial() {
                         onChange={(e) => changeHandler(e)}
                       />
                     </Col>
+                    {
+                      validations.customUnit != ""
+                      &&
+                      <Label
+                        for="materialNameErr"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {validations.customUnit}
+                      </Label>
+                    }
+                  </FormGroup>
+                  <FormGroup row>
+                    {
+                      validations.commonUnit != ""
+                      &&
+                      <Label
+                        for="materialNameErr"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {validations.commonUnit}
+                      </Label>
+                    }
                   </FormGroup>
 
 
@@ -154,11 +292,22 @@ function AddMaterial() {
                         onChange={(e) => changeHandler(e)}
                       />
                     </Col>
+                    {
+                      validations.description != ""
+                      &&
+                      <Label
+                        for="materialNameErr"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {'Material ' + validations.description}
+                      </Label>
+                    }
                   </FormGroup>
 
 
                   <FormGroup row className='d-flex justify-content-right'>
-                    <Button className='materialButtonBg' >
+                    <Button disabled={validations.total} onClick={() => submitHandler()} className='materialButtonBg' >
                       Add Material
                     </Button>
                   </FormGroup>

@@ -29,7 +29,7 @@ import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
-import buildingInventoryTypesReducer from './bmdashboard/buildingInventoryTypeReducer';
+import { buildingInventoryTypesReducer } from './bmdashboard/buildingInventoryTypeReducer';
 
 export default combineReducers({
   auth: authReducer,
