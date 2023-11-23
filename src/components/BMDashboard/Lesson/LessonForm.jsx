@@ -27,8 +27,10 @@ function LessonForm() {
   const addTag = e => {
     e.preventDefault();
     if (tagInput) {
-      setLessonFormTags([...LessonFormtags, tagInput]);
-      setTagInput('');
+      if (!LessonFormtags.includes(tagInput)) {
+        setLessonFormTags([...LessonFormtags, tagInput]);
+        setTagInput('');
+      }
     }
   };
 
@@ -89,7 +91,6 @@ function LessonForm() {
       fileInput.value = '';
     }
   };
-  // TODO Adjust this function so when users enter tags then enter a belonging project it doesnt reset all tags
   const handleProjectChange = e => {
     const selectedProjectId = e.target.value;
     setSelectedProject(selectedProjectId);
