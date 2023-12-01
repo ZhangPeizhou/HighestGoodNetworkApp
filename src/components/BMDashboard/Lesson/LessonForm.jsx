@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import './LessonForm.css';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -133,12 +134,23 @@ function LessonForm() {
   // Lesson submit where all the data from user input is in here
   const LessonFormSubmit = e => {
     e.preventDefault();
+    if (!LessonFormtags.length) {
+      // Display a toast notification
+      toast.error('Please Add Atleast One Tag');
+      return;
+    }
+    if (!selectedProject) {
+      // Display a toast notification
+      toast.error('Please select a project before submitting.');
+      return;
+    }
     // console.log(LessonFormtags, "Tags")
     // console.log(selectedProject, "selected project")
     // console.log(selectedRole, "selecedRole")
     // console.log(selectedFile, "selected file")
     // console.log(LessonText, "lesson text")
     // console.log(LessonTitleText,"lesson title")
+    toast.success('Lesson Submited');
   };
   return (
     <div className="MasterContainer">
