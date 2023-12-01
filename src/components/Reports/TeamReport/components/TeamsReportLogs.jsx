@@ -1,4 +1,4 @@
-import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
+import ReportPage from 'components/Reports/sharedComponents/ReportPage';
 import React, { useState, useEffect } from 'react';
 
 import './ReportLogs.css';

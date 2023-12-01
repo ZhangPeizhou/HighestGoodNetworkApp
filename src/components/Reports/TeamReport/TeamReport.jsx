@@ -17,7 +17,7 @@ import {
 
 import { getTeamReportData } from './selectors';
 import './TeamReport.css';
-import { ReportPage } from '../sharedComponents/ReportPage';
+import ReportPage from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
 import Dropdown from 'react-bootstrap/Dropdown';

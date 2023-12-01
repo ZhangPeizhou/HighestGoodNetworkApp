@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
+import ReportPage from 'components/Reports/sharedComponents/ReportPage';
 import ReportCharts from './ReportCharts';
 
 function TeamChartsGroup() {

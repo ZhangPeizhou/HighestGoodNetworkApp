@@ -23,7 +23,7 @@ import TimeEntriesViz from '../TimeEntriesViz';
 import BadgeSummaryViz from '../BadgeSummaryViz';
 import BadgeSummaryPreview from '../BadgeSummaryPreview';
 import PeopleTableDetails from '../PeopleTableDetails';
-import { ReportPage } from '../sharedComponents/ReportPage';
+import ReportPage from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
