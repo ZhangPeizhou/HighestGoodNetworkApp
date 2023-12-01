@@ -1,1 +1,3 @@
-export { ReportHeader } from './ReportHeader';
+import ReportHeader from './ReportHeader';
+
+export default ReportHeader;

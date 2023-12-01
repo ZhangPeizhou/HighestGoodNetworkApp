@@ -1,1 +1,3 @@
-export { ReportCard } from './ReportCard';
+import ReportCard from './ReportCard';
+
+export default ReportCard;
