@@ -1,1 +1,3 @@
-export { TasksDetail } from './TasksDetail';
+import TasksDetail from './TasksDetail';
+
+export default TasksDetail;
