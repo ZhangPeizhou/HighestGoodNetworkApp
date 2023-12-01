@@ -8,16 +8,22 @@ import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import ReportPage from '../sharedComponents/ReportPage';
 import { Paging } from '../../common/Paging';
+<<<<<<< HEAD
 import TasksTable from '../TasksTable';
 import WbsTable from '../WbsTable';
 import { projectReportViewData } from './selectors';
+=======
+import { TasksTable } from '../TasksTable';
+import { WbsTable } from '../WbsTable';
+import projectReportViewData from './selectors';
+>>>>>>> Zijie_Fix_Report_Lint_Phase10
 import '../../Teams/Team.css';
 import './ProjectReport.css';
 
-export const ProjectReport = ({ match }) => {
+export default function ProjectReport({ match }) {
   const [memberCount, setMemberCount] = useState(0);
   const dispatch = useDispatch();
-  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
+  const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
     projectReportViewData,
   );
 
@@ -61,10 +67,10 @@ export const ProjectReport = ({ match }) => {
         </ReportPage.ReportBlock>
       </div>
       <div className="tasks-block">
-      <ReportPage.ReportBlock>
-        <TasksTable WbsTasksID={wbsTasksID} />
-      </ReportPage.ReportBlock>
+        <ReportPage.ReportBlock>
+          <TasksTable WbsTasksID={wbsTasksID} />
+        </ReportPage.ReportBlock>
       </div>
     </ReportPage>
   );
-};
+}
