@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
 import {
   Container,
@@ -12,46 +12,41 @@ import {
   Button,
   TabPane,
   TabContent,
-  NavItem,
-  NavLink,
-  Nav,
 } from 'reactstrap';
-import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser, resetPassword } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
-import TeamsTab from '../TeamsAndProjects/TeamsTab';
-import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { assign, get } from 'lodash';
-import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import { get } from 'lodash';
+
+import PhoneInput from 'react-phone-input-2';
+import DatePicker from 'react-datepicker';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '../../../utils/checkValidURL';
+import { fetchAllProjects } from '../../../actions/projects';
+
+import 'react-phone-input-2/lib/style.css';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import getUserTimeZone from '../../../services/timezoneApiService';
+import hasPermission from '../../../utils/permissions';
+import { boxStyle } from '../../../styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   getAllUserTeams,
   updateTeam,
   deleteTeamMember,
   addTeamMember,
 } from '../../../actions/allTeamsAction';
-
-import { fetchAllProjects } from 'actions/projects';
-
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import classnames from 'classnames';
-import TimeZoneDropDown from '../TimeZoneDropDown';
-import getUserTimeZone from 'services/timezoneApiService';
-import hasPermission from 'utils/permissions';
-import NewUserPopup from 'components/UserManagement/NewUserPopup';
-import { boxStyle } from 'styles';
-import WeeklySummaryOptions from './WeeklySummaryOptions';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import { createUser } from '../../../services/userProfileService';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import DuplicateNamePopup from '../../UserManagement/DuplicateNamePopup';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
+nextDay.setDate(nextDay.getDate() + 1);
 
 class AddUserProfile extends Component {
   constructor(props) {
@@ -97,10 +92,9 @@ class AddUserProfile extends Component {
       teamCode: '',
       codeValid: false,
     };
-    
 
     const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
 
   popupClose = () => {
@@ -119,8 +113,7 @@ class AddUserProfile extends Component {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-  
-  
+
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -377,7 +370,7 @@ class AddUserProfile extends Component {
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
                         onChange={this.handleUserProfile}
-                        selected={'America/Los_Angeles'}
+                        selected="America/Los_Angeles"
                         id="timeZone"
                       />
                     </FormGroup>
@@ -393,10 +386,14 @@ class AddUserProfile extends Component {
                         <DatePicker
                           selected={this.state.userProfile.createdDate}
                           minDate={new Date(DATE_PICKER_MIN_DATE)}
-                          onChange={date => this.setState({ userProfile: {
-                            ...this.state.userProfile,
-                            createdDate: date,
-                          }})}
+                          onChange={date =>
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                createdDate: date,
+                              },
+                            })
+                          }
                           className="form-control"
                         />
                       </div>
@@ -415,7 +412,7 @@ class AddUserProfile extends Component {
                     projectsData={this.props ? this.props.allProjects.projects : []}
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
-                    isUserAdmin={true}
+                    isUserAdmin
                     role={this.props.auth.user.role}
                     edit
                   />
@@ -427,10 +424,10 @@ class AddUserProfile extends Component {
                     onAssignTeam={this.onAssignTeam}
                     onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
-                    isUserAdmin={true}
+                    isUserAdmin
                     role={this.props.auth.user.role}
                     teamCode={this.state.teamCode}
-                    canEditTeamCode={true}
+                    canEditTeamCode
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
@@ -488,7 +485,7 @@ class AddUserProfile extends Component {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
     this.setState({
-      teams: teams,
+      teams,
     });
   };
 
@@ -497,7 +494,7 @@ class AddUserProfile extends Component {
     projects.push(assignedProject);
 
     this.setState({
-      projects: projects,
+      projects,
     });
   };
 
@@ -528,8 +525,8 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
-            
-            let currentLocation = {
+
+            const currentLocation = {
               userProvided: location,
               coords: {
                 lat: response.data.results[0].geometry.lat,
@@ -539,7 +536,7 @@ class AddUserProfile extends Component {
               city: response.data.results[0].components.city,
             };
             if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-            
+
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
@@ -550,7 +547,7 @@ class AddUserProfile extends Component {
               },
             });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Invalid location or ${response.data.status.message}`);
           }
         })
         .catch(err => console.log(err));
@@ -565,16 +562,16 @@ class AddUserProfile extends Component {
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
-    } else if (firstLength && lastLength && phone.length >= 9) {
-      return true;
-    } else {
-      toast.error('Please fill all the required fields');
-      return false;
     }
+    if (firstLength && lastLength && phone.length >= 9) {
+      return true;
+    }
+    toast.error('Please fill all the required fields');
+    return false;
   };
 
   checkIfDuplicate = (firstName, lastName) => {
-    let { userProfiles } = this.state.userProfiles;
+    const { userProfiles } = this.state.userProfiles;
 
     const duplicates = userProfiles.filter(user => {
       return (
@@ -584,11 +581,11 @@ class AddUserProfile extends Component {
     });
 
     if (duplicates.length > 0) return true;
-    else return false;
+    return false;
   };
 
   createUserProfile = allowsDuplicateName => {
-    let that = this;
+    const that = this;
     const {
       firstName,
       email,
@@ -608,25 +605,25 @@ class AddUserProfile extends Component {
 
     const userData = {
       password: process.env.REACT_APP_DEF_PWD,
-      role: role,
-      firstName: firstName,
-      lastName: lastName,
-      jobTitle: jobTitle,
-      phoneNumber: phoneNumber,
+      role,
+      firstName,
+      lastName,
+      jobTitle,
+      phoneNumber,
       bio: '',
       weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
-      weeklySummaryOption: weeklySummaryOption,
+      weeklySummaryOption,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
       projects: this.state.projects,
-      email: email,
-      privacySettings: privacySettings,
-      collaborationPreference: collaborationPreference,
-      timeZone: timeZone,
-      location: location,
-      allowsDuplicateName: allowsDuplicateName,
-      createdDate: createdDate,
+      email,
+      privacySettings,
+      collaborationPreference,
+      timeZone,
+      location,
+      allowsDuplicateName,
+      createdDate,
       teamCode: this.state.teamCode,
     };
 
@@ -635,7 +632,7 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
         userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else{
+      } else {
         toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
         this.setState({
           formValid: {
@@ -652,21 +649,21 @@ class AddUserProfile extends Component {
     }
     if (dropboxDoc) {
       if (isValidMediaUrl(dropboxDoc)) {
-          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-        } else {
-          toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-          this.setState({
-            formValid: {
-              ...that.state.formValid,
-              dropboxDoc: false,
-            },
-            formErrors: {
-              ...that.state.formErrors,
-              dropboxDoc: 'Invalid Dropbox Link URL',
-            },
-          });
-          return;
-        }
+        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      } else {
+        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            dropboxDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            dropboxDoc: 'Invalid Dropbox Link URL',
+          },
+        });
+        return;
+      }
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -688,10 +685,15 @@ class AddUserProfile extends Component {
             } else {
               toast.success('User profile created.');
               this.state.userProfile._id = res.data._id;
-              if(this.state.teams.length > 0){
-                this.state.teams.forEach((team) => {
-                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
-                })
+              if (this.state.teams.length > 0) {
+                this.state.teams.forEach(team => {
+                  this.props.addTeamMember(
+                    team._id,
+                    res.data._id,
+                    res.data.firstName,
+                    res.data.lastName,
+                  );
+                });
               }
             }
             this.props.userCreated();
@@ -926,7 +928,7 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
+            weeklyCommittedHours: event.target.value ? '' : 'Committed hours can not be empty',
           },
         });
         break;

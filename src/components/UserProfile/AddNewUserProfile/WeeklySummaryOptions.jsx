@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Input, FormGroup } from 'reactstrap';
 
 function WeeklySummaryOptions({ handleUserProfile }) {
