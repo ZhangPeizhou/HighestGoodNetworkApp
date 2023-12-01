@@ -1,1 +1,3 @@
-export { ProjectReport } from './ProjectReport';
+import ReportPage from './ReportPage';
+
+export default ReportPage;
