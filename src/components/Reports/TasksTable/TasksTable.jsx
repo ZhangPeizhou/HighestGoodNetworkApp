@@ -8,7 +8,7 @@ import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from 'components/UserManagement/TextSearchBox';
 import { boxStyle } from 'styles';
-import { TasksDetail } from '../TasksDetail';
+import TasksDetail from '../TasksDetail';
 import getTasksTableData from './selectors';
 
 function FilterOptions({ tasks, filterName, width, setOneFilter, filters }) {
