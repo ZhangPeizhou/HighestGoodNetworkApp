@@ -1,1 +1,3 @@
-export { ProjectMemberTable } from './ProjectMemberTable';
+import ProjectMemberTable from './ProjectMemberTable';
+
+export default ProjectMemberTable;
