@@ -6,7 +6,7 @@ import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
-import { ReportPage } from '../sharedComponents/ReportPage';
+import ReportPage from '../sharedComponents/ReportPage';
 import { Paging } from '../../common/Paging';
 import { TasksTable } from '../TasksTable';
 import { WbsTable } from '../WbsTable';

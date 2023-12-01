@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
+import ReportPage from 'components/Reports/sharedComponents/ReportPage';
 import TeamReportLogs from './TeamReportLogs';
 import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
@@ -123,7 +123,7 @@ function UserLoginPrivileges({
       {/* Two cards with pie charts with data */}
       <div className="mobile-chart"
         style={{
-          display: 'flex',          
+          display: 'flex',
           gap: '16px',
         }}
       >
