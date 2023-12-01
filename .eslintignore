@@ -21,6 +21,11 @@ src/components/common/**
 src/components/Header/**
 src/components/BMDashboard/BMHeader/**
 src/components/Inventory/**
+<<<<<<< HEAD
+=======
+src/components/Login/**
+src/components/ManageMemberships/**
+>>>>>>> Zijie_Fix_Report_Lint_Phase6
 src/components/Memberships/**
 src/components/MonthlyEffort/**
 src/components/NewProfileLink/**
@@ -41,3 +46,7 @@ src/components/Timelog/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
+<<<<<<< HEAD
+=======
+src/components/MouseoverText/**
+>>>>>>> Zijie_Fix_Report_Lint_Phase6
