@@ -1,13 +1,15 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import './BlueSquare.css';
-import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
-import { formatDateFromDescriptionString } from 'utils/formatDateFromDescriptionString';
+import { formatDate } from '../../../utils/formatDate';
+import { formatDateFromDescriptionString } from '../../../utils/formatDateFromDescriptionString';
+import hasPerm from '../../../utils/permissions';
 
-const BlueSquare = (props) => {
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+function BlueSquare(props) {
+  const { hasPermission } = props;
+  const isInfringementAuthorizer = hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
   const { blueSquares, handleBlueSquare } = props;
 
   return (
@@ -17,7 +19,9 @@ const BlueSquare = (props) => {
           ? blueSquares
               .sort((a, b) => (a.date > b.date ? 1 : -1))
               .map((blueSquare, index) => (
+                // eslint-disable-next-line jsx-a11y/interactive-supports-focus
                 <div
+                  // eslint-disable-next-line react/no-array-index-key
                   key={index}
                   role="button"
                   id="wrapper"
@@ -43,9 +47,11 @@ const BlueSquare = (props) => {
                 >
                   <div className="report" data-testid="report">
                     <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && 
-                      <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
-                    }
+                    {blueSquare.description !== undefined && (
+                      <div className="summary">
+                        {formatDateFromDescriptionString(blueSquare.description)}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
@@ -67,6 +73,6 @@ const BlueSquare = (props) => {
       <br />
     </div>
   );
-};
+}
 
-export default connect(null, { hasPermission })(BlueSquare);
+export default connect(null, { hasPerm })(BlueSquare);
