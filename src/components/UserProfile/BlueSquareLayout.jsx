@@ -52,14 +52,13 @@ const BlueSquareLayout = props => {
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
-  const [date, setDate] = useState(
-    moment
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .toISOString()
-      .split('T')[0],
-  );
-  const [IsReasonUpdated,setIsReasonUpdated] = useState(false);
+  const nextSundayStr = moment()
+    .tz('America/Los_Angeles')
+    .startOf('isoWeek')
+    .add(7, 'days')
+    .format('YYYY-MM-DD');
+  const [date, setDate] = useState(new Date(nextSundayStr));
+  const [IsReasonUpdated, setIsReasonUpdated] = useState(false);
   const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
     isFetching: false,
     error: false,
@@ -77,10 +76,10 @@ const BlueSquareLayout = props => {
     setShow(false);
   }, []);
 
-  
   const handleSubmit = async event => {
     event.preventDefault();
-    if (fetchState.isSet && IsReasonUpdated) { //if reason already exists and if it is changed by the user
+    if (fetchState.isSet && IsReasonUpdated) {
+      //if reason already exists and if it is changed by the user
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await patchReason(userProfile._id, { date: date, message: reason });
       if (response.status !== 200) {
@@ -90,9 +89,10 @@ const BlueSquareLayout = props => {
         });
       } else {
         fetchDispatch({ type: 'SUCCESS' });
-        }
+      }
       setShow(true);
-    } else { //add/create reason
+    } else {
+      //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await addReason(userProfile._id, { date: date, message: reason });
       console.log(response);
@@ -134,7 +134,7 @@ const BlueSquareLayout = props => {
             //disable the scheduler button if no blue square is assigned to the user
             //length<2 because already one dummy blue square is present on every profile
             //disabled={userProfile?.infringements.length<2}
-            >
+          >
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (
@@ -142,25 +142,12 @@ const BlueSquareLayout = props => {
             )}
           </Button>
         </div>
-        {show && (
-          <Modal show={show} onHide={handleClose}>
-            <ScheduleReasonModal
-              handleClose={handleClose}
-              user={userProfile}
-              reason={reason}
-              setReason={setReason}
-              handleSubmit={handleSubmit}
-              fetchState={fetchState}
-              date={date}
-              setDate={setDate}
-              fetchMessage={fetchState.fetchMessage}
-              fetchDispatch={fetchDispatch}
-              userId={userProfile._id}
-              IsReasonUpdated={IsReasonUpdated}
-              setIsReasonUpdated={setIsReasonUpdated}
-            />
-          </Modal>
-        )}
+        <Modal show={show} onHide={handleClose}>
+          <ScheduleReasonModal
+            handleClose={handleClose}
+            userId={userProfile._id}
+          />
+        </Modal>
       </div>
     );
   }
