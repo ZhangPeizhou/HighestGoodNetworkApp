@@ -60,6 +60,14 @@
   color: gray;
 }
 
+.materialFormText {
+  color: darkslategrey;
+}
+
+.materialMargin {
+  margin-top: 10px;
+}
+
 .materialFormValue {
   font-weight: 400;
   font-size: 15px;

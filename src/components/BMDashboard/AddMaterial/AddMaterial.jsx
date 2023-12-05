@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Container, Form, FormGroup, Input, Label, Button, CardBody, Card } from 'reactstrap'
+import { Col, Container, Form, FormGroup, Input, Label, Button, CardBody, Card, Table } from 'reactstrap'
 import './AddMaterial.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import MaterialTypesList from './MaterialTypesList';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
+import { similarity } from './SimilarityCheck';
 
 function AddMaterial() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function AddMaterial() {
     name: '',
     unit: '',
     customUnit: '',
+    customUnitCheck: false,
     description: ''
 
   })
@@ -26,12 +28,12 @@ function AddMaterial() {
     customUnit: '',
     description: '',
     commonUnit: '',
+    customUnitCheck: '',
     total: true
   })
-
+  const [similarityData, setSimilarityData] = useState([]);
 
   useEffect(() => {
-    console.log('postBuildingInventoryResult', postBuildingInventoryResult)
     if (postBuildingInventoryResult?.error == true) {
       toast.error(`${postBuildingInventoryResult?.result}`);
       dispatch(fetchAllBuildingInventoryMaterialTypes());
@@ -57,10 +59,15 @@ function AddMaterial() {
     if (field == 'unit') {
       if (value != '') {
         material.customUnit = ''
+        material.customUnitCheck = false;
       }
     }
+    if (field == 'customUnitCheck') {
+      material[field] = e.target.checked;
+    }
     setMaterial({ ...material });
-    validationHandler(field, value)
+    if (field != null)
+      validationHandler(field, value)
   }
   const obj = {
     name: Joi.string()
@@ -74,13 +81,15 @@ function AddMaterial() {
     unit: Joi.string().allow('').optional(),
     customUnit: Joi.string().allow('').optional()
   }
-  const schema = Joi.object(obj).options({ abortEarly: false });
+  const schema = Joi.object(obj).options({ abortEarly: false, allowUnknown: true });
 
   const submitHandler = () => {
     let error = validationHandler(null, null, true);
-    if (!error) {
-      dispatch(postBuildingInventoryType(material));
-    }
+    console.log(material)
+
+    // if (!error) {
+    //   dispatch(postBuildingInventoryType(material));
+    // }
   }
   const validationHandler = (field, value, complete) => {
     let validate;
@@ -89,7 +98,7 @@ function AddMaterial() {
     if (complete) {
       validate = schema.validate(material);
     }
-    else {
+    else if (field != 'customUnitCheck') {
       propertySchema = Joi.object({ [field]: obj[field] });
       validate = propertySchema.validate({ [field]: value });
     }
@@ -109,7 +118,7 @@ function AddMaterial() {
       validations.commonUnit = '';
     }
 
-    if (validate.error) {
+    if (validate?.error) {
       for (let i = 0; i < validate.error.details.length; i++) {
         let errorObj = validate.error.details[i];
         if (errorObj.context.peersWithLabels) {
@@ -127,6 +136,34 @@ function AddMaterial() {
       if (!complete) {
         validations[field] = '';
       }
+    }
+
+    if (material.customUnit != '') {
+      let _similarityData = [];
+      for (let i = 0; i < buildingInventoryTypes.result.length; i++) {
+        let similarityPercent = similarity(buildingInventoryTypes.result[i].unit, material.customUnit);
+        // console.log(buildingInventoryTypes.result[i].unit, similarityPercent)
+        if (similarityPercent > 0.65) {
+          let obj = {
+            'unitFromStore': buildingInventoryTypes.result[i].unit,
+            'similarityPercent': similarityPercent
+          }
+          _similarityData.push(obj);
+        }
+      }
+      setSimilarityData([..._similarityData])
+
+    } else {
+      let _similarityData = [];
+      setSimilarityData([..._similarityData])
+    }
+    if (similarityData.length != 0 && !material.customUnitCheck) {
+      validationErrorFlag = validationErrorFlag || true;
+      validations.customUnitCheck = 'Please confirm or select a unit from available ones';
+    }
+    else {
+      validationErrorFlag = validationErrorFlag || false;
+      validations.customUnitCheck = '';
     }
 
     validations.total = validationErrorFlag;
@@ -203,7 +240,7 @@ function AddMaterial() {
                       lg={2} sm={4}
                       className='materialFormLabel'
                     >
-                      Material Unit
+                      Measurement
                     </Label>
                     <Col lg={4} sm={8} className='materialFormValue'>
                       <Input
@@ -230,7 +267,7 @@ function AddMaterial() {
                       className='materialFormLabel'
                     >
                       <div className='d-flex flex-column justify-content-start'>
-                        Custom Material Unit
+                        New  Measurement
                         <br></br>
                         <i className='materialFormSmallText'>
                           Please note that , you can either select a unit from the list or enter a cutom unit of your choice
@@ -259,6 +296,76 @@ function AddMaterial() {
                       </Label>
                     }
                   </FormGroup>
+
+                  {
+                    similarityData.length != 0 &&
+                    <FormGroup row className='align-items-center justify-content-start'>
+                      <Label
+                        for="similarityCheck"
+                        lg={12} sm={12}
+                        className='materialFormLabel'
+                      >
+
+                        <div className='materialFormText'>
+                          <div>
+                            <i>
+                              Found some similar units from store.
+
+                            </i>
+                            <br />
+
+                            <FormGroup check>
+                              <Input
+                                id="customUnitCheck"
+                                name="customUnitCheck"
+                                type="checkbox"
+                                value={material.customUnitCheck}
+                                onChange={(e) => changeHandler(e)}
+                              />
+                              <Label
+                                check
+                                for="customUnitCheck"
+                              >
+                                Please confirm if the newly entered unit is different from the available ones.
+                              </Label>
+                              {
+                                validations.customUnitCheck != ""
+                                &&
+                                <Label
+                                  for="materialNameErr"
+                                  sm={12}
+                                  className='materialFormError'
+                                >
+                                  {validations.customUnitCheck}
+                                </Label>
+                              }
+                            </FormGroup>
+
+                          </div>
+                          <Table bordered striped className='materialMargin'>
+                            <tbody>
+                              <tr>
+                                <th>Unit</th>
+                                <th>Similarity Percentage to {material.customUnit}</th>
+                              </tr>
+                              {
+                                similarityData.map((sim) =>
+                                  <tr key={sim.unitFromStore}>
+                                    <td > {sim.unitFromStore} </td>
+                                    <td > {sim.similarityPercent} </td>
+                                  </tr>
+                                )
+                              }
+                            </tbody>
+                          </Table>
+                        </div>
+
+                      </Label>
+
+                    </FormGroup>
+                  }
+
+
                   <FormGroup row>
                     {
                       validations.commonUnit != ""
