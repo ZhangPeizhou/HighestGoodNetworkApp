@@ -78,6 +78,7 @@ export class Projects extends Component {
         active,
       },
     });
+    console.log(projectId, " - ", active, " - ", projectName)
   };
 
   confirmDelete = () => {

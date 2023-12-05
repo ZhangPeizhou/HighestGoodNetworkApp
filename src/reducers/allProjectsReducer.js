@@ -36,7 +36,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     case types.DELETE_PROJECT:
       if (action.status === 200) {
         const index = allProjects.projects.findIndex(project => project._id === action.projectId);
-        return updateObject(allProjects, {
+                return updateObject(allProjects, {
           projects: Object.assign([
             ...allProjects.projects.slice(0, index),
             ...allProjects.projects.slice(index + 1),

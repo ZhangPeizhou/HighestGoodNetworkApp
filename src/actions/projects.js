@@ -73,10 +73,20 @@ export const deleteProject = projectId => {
     let status = 200;
 
     try {
+      // console.log("url", url)
       const res = await axios.delete(url);
+      console.log("res", res)
       status = res.status;
-    } catch (err) {
-      console.log("CAN'T DELETE", err);
+    } catch (error) {
+      console.log("CAN'T DELETE", error);
+      if (error.response) {
+        console.log('Server responded with status code:', error.response.status);
+        console.log('Response data:', error.response.data);
+      } else if (error.request) {
+        console.log('No response received:', error.request);
+      } else {
+        console.log('Error creating request:', error.message);
+      }
       status = 400;
     }
 
