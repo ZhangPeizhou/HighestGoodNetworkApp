@@ -206,10 +206,10 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
-        <BMProtectedRoute path="/bmdashboard/addMaterial" component={AddMaterial} />
+        <BMProtectedRoute path="/bmdashboard/materials/add" component={AddMaterial} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
