@@ -15,7 +15,6 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
 import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
-import hasPermission from '../../utils/permissions';
 
 
 function RolePermissions(props) {
@@ -27,10 +26,6 @@ function RolePermissions(props) {
   const [disabled, setDisabled] = useState(true);
   const history = useHistory();
   const [showPresetModal, setShowPresetModal] = useState(false);
-
-  const isEditableRole = props.role === 'Owner' ? props.hasPermission('addDeleteEditOwners') : props.auth.user.role !== props.role;
-  const canEditRole = isEditableRole && props.hasPermission('putRole');
-  const canDeleteRole = isEditableRole && props.hasPermission('deleteRole');
 
   useEffect(() => {
     setRoleName(props.role);
@@ -114,7 +109,7 @@ function RolePermissions(props) {
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
             <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
-            {canEditRole && (
+            {props?.userRole === 'Owner' && (
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
@@ -123,7 +118,7 @@ function RolePermissions(props) {
               />
             )}
           </div>
-          {canEditRole && (
+          {props?.userRole === 'Owner' && (
             <div style={{ flexDirection: 'row', display: 'flex' }}>
               <div className="name-container__btn_columns">
                 <div className="name-container__btns">
@@ -156,7 +151,7 @@ function RolePermissions(props) {
                   >
                     Save
                   </Button>
-                  <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle} disabled={!canDeleteRole}>
+                  <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
                     Delete Role
                   </Button>
                 </div>
@@ -227,7 +222,7 @@ function RolePermissions(props) {
         <PermissionList
           rolePermissions={permissions}
           permissionsList={permissionLabel}
-          editable={canEditRole}
+          editable={true}
           setPermissions={setPermissions}
           onChange={()=>{setChanged(true)}}
         />
@@ -281,14 +276,13 @@ function RolePermissions(props) {
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets, auth: state.auth });
+const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),
   getPresets: role => dispatch(getPresetsByRole(role)),
   createNewPreset: newPreset => dispatch(createNewPreset(newPreset)),
-  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RolePermissions);
