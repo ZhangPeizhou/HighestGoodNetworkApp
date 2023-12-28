@@ -10,6 +10,7 @@ import PermissionsManagement from 'components/PermissionsManagement/PermissionsM
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
+import AddConsumable from 'components/BMDashboard/AddConsumable/AddConsumable';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import Reports from './components/Reports';
@@ -49,8 +50,6 @@ import MaterialsList from './components/BMDashboard/MaterialsList';
 import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 import UpdateMaterialsBulk from './components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk';
-
-
 
 export default (
   <Switch>
@@ -177,6 +176,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials/update" component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials" component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/addconsumable/" component={AddConsumable} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
