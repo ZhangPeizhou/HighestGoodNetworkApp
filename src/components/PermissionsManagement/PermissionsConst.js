@@ -47,7 +47,7 @@ export const permissionLabels = [
       {
         label: 'Modify Important User Info',
         key: 'putUserProfileImportantInfo',
-        description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
+        description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links, weekly summary options, committed hours, role, isRehireable, email, date created, and bio status. It also provides functionalities covered by other permissions related to assigning teams or projects and changing active status.',
       },
     ]
   },
