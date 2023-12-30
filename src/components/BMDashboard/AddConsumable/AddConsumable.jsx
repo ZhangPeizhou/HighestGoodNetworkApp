@@ -1,8 +1,8 @@
 import './AddConsumable.css';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './AddConsumable.css';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
+import DatePicker from 'react-datepicker';
 import dateFnsFormat from 'date-fns/format';
 import { FaCalendarAlt } from 'react-icons/fa';
 import Noimg from '../Lesson/images/Noimg3.jpg';
@@ -14,7 +14,6 @@ function AddConsumable() {
   const FORMAT = 'MM/dd/yy';
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   // TODO fix handleDrop
   // const handleDrop = (e) => {
   //   e.preventDefault();
@@ -51,6 +50,12 @@ function AddConsumable() {
   // const handleTouchStart = () => {
   //   console.log("hi touchstart")
   // };
+  const datepickerRef = useRef(null);
+  const openDatePicker = () => {
+    if (datepickerRef.current) {
+      datepickerRef.current.setOpen(true);
+    }
+  };
   return (
     <div className="ConsumableMasterContainer">
       <div className="ConsumableFormContainer">
@@ -117,29 +122,18 @@ function AddConsumable() {
                   <option value="3">Three</option>
                 </FormControl>
               </Form.Group>
-              <Form.Group>
-                <Form.Label>Purchased Date</Form.Label>
-                <div className="date-picker-wrapper">
-                  <DayPickerInput
-                    selected={selectedDate}
-                    // eslint-disable-next-line
-                    onChange={(date) => setSelectedDate(date)}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    dateFormat="MM/dd/yy"
-                    formatDate={formatDate}
-                    value={selectedDate}
-                  />
-                  <FaCalendarAlt
-                    className="calendar-icon"
-                    onClick={() => document.getElementById('datePicker').click()}
-                  />
-                  <input
-                    id="datePicker"
-                    type="hidden"
-                    onFocus={() => document.getElementById('datePicker').click()}
-                  />
-                </div>
-              </Form.Group>
+              <Form.Label>Purchased Date</Form.Label>
+              <div className="date-picker-wrapper">
+                <DatePicker
+                  ref={datepickerRef}
+                  selected={selectedDate}
+                  // eslint-disable-next-line
+                  onChange={(date) => setSelectedDate(date)}
+                  placeholderText={`${dateFnsFormat(new Date(), FORMAT)}`}
+                  dateFormat="MM/dd/yy"
+                />
+                <FaCalendarAlt className="calendar-icon" onClick={openDatePicker} />
+              </div>
             </div>
           </div>
           <div className="ConsumableDragAndDropFormGroup">
