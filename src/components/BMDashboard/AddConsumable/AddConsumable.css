@@ -93,6 +93,27 @@
  .ConsumableCurrencySelect{
   width: 20%
  }
+.date-picker-wrapper{
+  display: flex;
+  align-items: center;
+}
+.calendar-icon{
+  min-width: 10px;
+}
+.ShippingTaxesDiv{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.ConsumableNumberDiv{
+  display: flex;
+  flex-direction: row;
+}
+.ConsumableTextarea textarea {
+  resize: vertical; /* Allow vertical resizing only */
+  min-height: 100px; /* Adjust the minimum height as needed */
+}
+
    @media (max-width: 570px) {
     .ConsumableFormSelectContainer {
       align-items: center;
@@ -118,5 +139,14 @@
     .ConsumabledragAndDropStyle {
       height: 100%
     }
+
+  }
+  @media (max-width: 800px) {
+    .ConsumablePriceDiv{
+      display: flex;
+      flex-direction: column;
+      width: 70%;
+     }
+
 
   }

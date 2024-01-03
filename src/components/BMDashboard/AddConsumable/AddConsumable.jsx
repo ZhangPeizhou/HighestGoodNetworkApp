@@ -75,7 +75,6 @@ function AddConsumable() {
             </div>
             <div className="ConsumableSingleFormSelect">
               <Form.Group controlId="Form.ControlSelect2">
-                {/* By default the lesson can be read by anyone. The author can change the permission to only public to certain roles. */}
                 <Form.Label>Consumable Name</Form.Label>
                 <FormControl as="select" aria-label="Default select example">
                   <option>All</option>
@@ -85,7 +84,6 @@ function AddConsumable() {
                 </FormControl>
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                {/* Can have multiple tags. Needs to add tag for belonging project name automatically. */}
                 <Form.Label>Invoice Number or ID</Form.Label>
                 <Form.Control type="text" placeholder="Invoice No or ID for consumable" />
               </Form.Group>
@@ -96,7 +94,6 @@ function AddConsumable() {
                 <Form.Control type="text" placeholder="Invoice No or ID for consumable" />
               </Form.Group>
               <Form.Group>
-                {/* By default the lesson can be read by anyone. The author can change the permission to only public to certain roles. */}
                 <Form.Label>Currency</Form.Label>
                 <FormControl as="select" aria-label="Default select example">
                   <option>USD</option>
@@ -106,14 +103,12 @@ function AddConsumable() {
                 </FormControl>
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                {/* Can have multiple tags. Needs to add tag for belonging project name automatically. */}
-                <Form.Label>Invoice Number or ID</Form.Label>
-                <Form.Control type="text" placeholder="Invoice No or ID for consumable" />
+                <Form.Label>Total Qty</Form.Label>
+                <Form.Control type="number" placeholder="" />
               </Form.Group>
             </div>
             <div className="ConsumableCurrencySelect">
               <Form.Group>
-                {/* By default the lesson can be read by anyone. The author can change the permission to only public to certain roles. */}
                 <Form.Label>Qty Unit of Measurement</Form.Label>
                 <FormControl as="select" aria-label="Default select example">
                   <option>All</option>
@@ -135,6 +130,25 @@ function AddConsumable() {
                 <FaCalendarAlt className="calendar-icon" onClick={openDatePicker} />
               </div>
             </div>
+          </div>
+          <div className="ShippingTaxesDiv">
+            <Form.Group>
+              <Form.Label>Shipping Fee excluding taxes (enter 0 if free)</Form.Label>
+              <Form.Control type="number" placeholder="" />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Taxes</Form.Label>
+              <Form.Control type="number" placeholder="" />
+            </Form.Group>
+          </div>
+          <Form.Label>Supplier Phone Number</Form.Label>
+          <div className="ConsumableNumberDiv">
+            <Form.Group>
+              <Form.Control type="number" placeholder="1" />
+            </Form.Group>
+            <Form.Group>
+              <Form.Control type="number" placeholder="xxx-xxx-xxxx" />
+            </Form.Group>
           </div>
           <div className="ConsumableDragAndDropFormGroup">
             <Form.Group controlId="exampleForm.ControlFile1">
@@ -168,6 +182,18 @@ function AddConsumable() {
               </div>
             </Form.Group>
           </div>
+          <Form.Group>
+            <Form.Label>Link to Buy</Form.Label>
+            <Form.Control type="text" placeholder="https://" />
+          </Form.Group>
+          <Form.Group className="ConsumableTextarea">
+            <Form.Label>Consumable Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={10}
+              placeholder="Describe your consumable in detail"
+            />
+          </Form.Group>
           <div className="ConsumableButtonDiv">
             <Button className="ConsumableFormButtonCancel" type="cancel">
               Cancel
