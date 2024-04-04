@@ -56,6 +56,25 @@ describe('WeeklySummariesReport page', () => {
       expect(await screen.findByTestId('error')).toBeInTheDocument();
     });
 
+    it('displays loading indicator', () => {
+      reduxHooks.useSelector.mockImplementation(callback => ({
+        ...callback(mockStoreState),
+        weeklySummariesReport: {
+          hasPermission: hasPermission,
+          getWeeklySummariesReport: jest.fn(),
+          fetchAllBadges: jest.fn(),
+          loading: true,
+          summaries: [],
+          authUser: { role: '' },
+          roles: [],
+          badges: [],
+          getInfoCollections: jest.fn(), 
+        },
+      }));
+      renderWithProvider(<WeeklySummariesReport />, {});;
+      expect(screen.getByTestId('loading')).toBeInTheDocument();
+    });
+
     it('displays section title', async() => {
       reduxHooks.useSelector.mockImplementation(callback => ({
         ...callback(mockStoreState),
