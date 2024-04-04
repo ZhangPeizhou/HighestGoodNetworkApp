@@ -56,7 +56,7 @@ describe('WeeklySummariesReport page', () => {
       expect(await screen.findByTestId('error')).toBeInTheDocument();
     });
 
-    it('displays loading indicator', () => {
+    it('displays loading indicator', async() => {
       reduxHooks.useSelector.mockImplementation(callback => ({
         ...callback(mockStoreState),
         weeklySummariesReport: {
@@ -71,8 +71,10 @@ describe('WeeklySummariesReport page', () => {
           getInfoCollections: jest.fn(), 
         },
       }));
-      renderWithProvider(<WeeklySummariesReport />, {});;
-      expect(screen.getByTestId('loading')).toBeInTheDocument();
+      renderWithProvider(<WeeklySummariesReport />, {});
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toBeInTheDocument()
+      });
     });
 
     it('displays section title', async() => {
