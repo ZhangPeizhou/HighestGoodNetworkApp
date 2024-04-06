@@ -3,7 +3,6 @@
 /* eslint-disable react/forbid-prop-types */
 
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Alert,
@@ -23,7 +22,6 @@ import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { set } from 'lodash';
 import SkeletonLoading from '../common/SkeletonLoading';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -297,6 +295,12 @@ function WeeklySummariesReport() {
     setSummaryRecepientsPopupOpen(val);
   };
 
+  const error = props?.weeklySummariesReport?.error;
+  const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+  const authEmailWeeklySummaryRecipient = props?.userProfile?.email;
+  const authorizedUser1 = process.env.REACT_APP_JAE;
+  const authorizedUser2 = process.env.REACT_APP_SARA;
+
   const popUpElements = () => {
     return (
       <WeeklySummaryRecipientsPopup
@@ -373,12 +377,6 @@ function WeeklySummariesReport() {
   const handleBioStatusToggleChange = () => {
     setSelectedBioStatus(prev => !prev);
   };
-
-  const error = props?.weeklySummariesReport?.error;
-  const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
-  const authEmailWeeklySummaryRecipient = props?.userProfile?.email;
-  const authorizedUser1 = process.env.REACT_APP_JAE;
-  const authorizedUser2 = process.env.REACT_APP_SARA;
 
   if (loading) {
     return (
