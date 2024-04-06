@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Alert,
   Container,
@@ -23,6 +23,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { set } from 'lodash';
 import SkeletonLoading from '../common/SkeletonLoading';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -32,6 +33,69 @@ import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+
+// Tool functions
+/**
+ * Get the roleNames
+ * @param {*} summaries
+ * @returns
+ */
+const getAllRoles = summaries => {
+  const roleNames = summaries.map(summary => `${summary.role}Info`);
+  const uniqueRoleNames = [...new Set(roleNames)];
+  return uniqueRoleNames;
+};
+
+/**
+ * Sort the summaries in alphabetixal order
+ * @param {*} summaries
+ * @returns
+ */
+const alphabetize = summaries => {
+  const temp = [...summaries];
+  return temp.sort((a, b) =>
+    `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+  );
+};
+
+/**
+ * This function calculates the hours promised by a user by a given end date of the week.
+ * It goes through the user's committed hours history and returns the last committed hour value that is less than or equal to the given date.
+ * If there's no such record in the history, it returns 10 (default value).
+ * If the history does not exist at all, it returns -1.
+ *
+ * @param {string} weekToDateX - The end date of the week in question. It should be a string that can be parsed into a Date object.
+ * @param {Array<Object>} weeklycommittedHoursHistory - An array of user's committed hours history records. Each record should be an object that contains at least the properties 'dateChanged' (a string that can be parsed into a Date object) and 'hours' (a number).
+ *
+ * @returns {number} The hours promised by the user by the given end date.
+ */
+const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
+  // 0. Edge case: If the history doesnt even exist
+  // only happens if the user is created without the backend changes
+  if (!weeklycommittedHoursHistory) {
+    return -1;
+  }
+  // 1. Edge case: If there is none, return 10 (the default value of weeklyComHours)
+  if (weeklycommittedHoursHistory.length === 0) {
+    return 10;
+  }
+
+  const weekToDateReformat = new Date(weekToDateX).setHours(23, 59, 59, 999);
+  // 2. Iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
+  for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i -= 1) {
+    const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
+    // console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
+    // As soon as the weekToDate is greater or equal than current history date
+    if (weekToDateReformat >= historyDateX) {
+      // return the promised hour
+      return weeklycommittedHoursHistory[i].hours;
+    }
+  }
+
+  // 3. at this date when the week ends, the person has not even join the team
+  // so it promised 0 hours
+  return 0;
+};
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -50,14 +114,11 @@ const weekDates = Array.from({ length: 4 }).map((_, index) => ({
 
 function WeeklySummariesReport() {
   const props = useSelector(state => state);
-  // console.log('props', props);
+  console.log('props', props);
 
-  const error = useSelector(state => state?.weeklySummariesReport?.error);
-  const allBadgeData = useSelector(state => state?.badge?.allBadgeData);
   const authUser = useSelector(state => state?.auth?.user);
   const infoCollections = useSelector(state => state?.infoCollections?.infos);
   const role = useSelector(state => state?.userProfile?.role);
-  const authEmailWeeklySummaryRecipient = useSelector(state => state?.userProfile?.email);
 
   const [bioEditPermission, setBioEditPermission] = useState(false);
   const [canEditSummaryCount, setCanEditSummaryCount] = useState(false);
@@ -67,11 +128,9 @@ function WeeklySummariesReport() {
   const [loading, setLoading] = useState(true);
   const [summaries, setSummaries] = useState([]);
   const [activeTab, setActiveTab] = useState(navItems[1]);
-  // three new set from the latest commit
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [summaryRecepientsPopupOpen, setSummaryRecepientsPopupOpen] = useState(false);
   const [isValidPwd, setIsValidPwd] = useState(true);
-
   const [badges, setBadges] = useState([]);
   const [loadBadges, setLoadBadges] = useState(false);
   const [hasSeeBadgePermission, setHasSeeBadgePermission] = useState(false);
@@ -81,45 +140,24 @@ function WeeklySummariesReport() {
   const [teamCodes, setTeamCodes] = useState([]);
   const [colorOptions, setColorOptions] = useState([]);
   const [auth, setAuth] = useState([]);
-  const [allRoleInfo, setAllRoleInfo] = useState([]);
   const [selectedOverTime, setSelectedOverTime] = useState([false]);
   const [selectedBioStatus, setSelectedBioStatus] = useState([false]);
+
+  const [allRoleInfo, setAllRoleInfo] = useState([]);
   const [weeklyRecipientAuthPass, setWeeklyRecipientAuthPass] = useState(null);
-  // const [role, setRole] = useState('');
 
   const dispatch = useDispatch();
 
-  // Tool functions
-  /**
-   * Get the roleNames
-   * @param {*} summaries
-   * @returns
-   */
-  const getAllRoles = summaries => {
-    const roleNames = summaries.map(summary => `${summary.role}Info`);
-    const uniqueRoleNames = [...new Set(roleNames)];
-    return uniqueRoleNames;
-  };
-
-  /**
-   * Sort the summaries in alphabetixal order
-   * @param {*} summaries
-   * @returns
-   */
-  const alphabetize = summaries => {
-    const temp = [...summaries];
-    return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
-    );
-  };
+  // useEffect(() => {
+  //   console.log('Updated summaries:', summaries);
+  // }, [summaries]); // 这个 useEffect 会在 summaries 状态更新后执行
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await dispatch(getWeeklySummariesReport());
+      setSummaries(res?.data ?? summaries); // line 92
       const badgeStatusCode = await dispatch(fetchAllBadges());
-      // console.log('badgeStatusCode', badgeStatusCode);
-      setLoading(false);
-      // console.log('RES:', res);
+      // setLoading(false);
 
       const canPutUserProfileImportantInfo = dispatch(hasPermission('putUserProfileImportantInfo'));
       setBioEditPermission(canPutUserProfileImportantInfo);
@@ -131,9 +169,8 @@ function WeeklySummariesReport() {
       );
       setCanSeeBioHighlight(dispatch(hasPermission('highlightEligibleBios')));
 
-      //     // 2. shallow copy and sort
-      // let summariesCopy = [...res.data];
-      let summariesCopy = [...(res?.data ?? [])];
+      // 2. shallow copy and sort
+      let summariesCopy = [...(res.data ?? [])];
       summariesCopy = alphabetize(summariesCopy);
 
       //     // 3. add new key of promised hours by week
@@ -187,18 +224,20 @@ function WeeklySummariesReport() {
           label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
         });
 
+      setLoading(props.weeklySummariesReport?.loading);
+      setAllRoleInfo([]);
       setSummaries(summariesCopy);
       setActiveTab(
         sessionStorage.getItem('tabSelection') === null
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       );
-      setBadges(allBadgeData);
+      setBadges(props?.badge?.allBadgeData);
       setHasSeeBadgePermission(badgeStatusCode === 200);
       setFilteredSummaries(summariesCopy);
       setColorOptions(colorOptions);
       setTeamCodes(teamCodes);
-      setAuth(auth);
+      setAuth(props?.auth);
 
       await getInfoCollections();
       const role = authUser?.role;
@@ -220,54 +259,7 @@ function WeeklySummariesReport() {
       setAllRoleInfo(allRoleInfo);
     };
     fetchData();
-    // console.log('useffect being called');
   }, []);
-
-  /**
-   * This function calculates the hours promised by a user by a given end date of the week.
-   * It goes through the user's committed hours history and returns the last committed hour value that is less than or equal to the given date.
-   * If there's no such record in the history, it returns 10 (default value).
-   * If the history does not exist at all, it returns -1.
-   *
-   * @param {string} weekToDateX - The end date of the week in question. It should be a string that can be parsed into a Date object.
-   * @param {Array<Object>} weeklycommittedHoursHistory - An array of user's committed hours history records. Each record should be an object that contains at least the properties 'dateChanged' (a string that can be parsed into a Date object) and 'hours' (a number).
-   *
-   * @returns {number} The hours promised by the user by the given end date.
-   */
-  const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
-    // 0. Edge case: If the history doesnt even exist
-    // only happens if the user is created without the backend changes
-    if (!weeklycommittedHoursHistory) {
-      return -1;
-    }
-    // 1. Edge case: If there is none, return 10 (the default value of weeklyComHours)
-    if (weeklycommittedHoursHistory.length === 0) {
-      return 10;
-    }
-
-    const weekToDateReformat = new Date(weekToDateX).setHours(23, 59, 59, 999);
-    // 2. Iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
-    for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i -= 1) {
-      const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
-      // console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
-      // As soon as the weekToDate is greater or equal than current history date
-      if (weekToDateReformat >= historyDateX) {
-        // return the promised hour
-        return weeklycommittedHoursHistory[i].hours;
-      }
-    }
-
-    // 3. at this date when the week ends, the person has not even join the team
-    // so it promised 0 hours
-    return 0;
-  };
-
-  const toggleTab = tab => {
-    if (activeTab !== tab) {
-      setActiveTab(tab);
-      sessionStorage.setItem('tabSelection', tab);
-    }
-  };
 
   const filterWeeklySummaries = () => {
     const selectedCodesArray = selectedCodes.map(e => e.value);
@@ -297,49 +289,10 @@ function WeeklySummariesReport() {
     setFilteredSummaries(temp);
   };
 
+  // seems sth is wrong here
   useEffect(() => {
-    if (props.weeklySummariesReport?.loading !== loading) {
-      setLoading(props.weeklySummariesReport?.loading);
-    }
-  }, [props.weeklySummariesReport?.loading, loading]);
-
-  useEffect(() => {
-    if (selectedCodes !== null) {
-      filterWeeklySummaries();
-    }
-  }, [selectedCodes]);
-
-  const handleSelectCodeChange = event => {
-    setSelectedCodes(event);
-  };
-
-  useEffect(() => {
-    if (selectedColors !== null) {
-      filterWeeklySummaries();
-    }
-  }, [selectedColors]);
-
-  const handleSelectColorChange = event => {
-    setSelectedColors(event);
-  };
-
-  useEffect(() => {
-    filterWeeklySummaries();
-  }, [selectedOverTime, selectedBioStatus]);
-
-  const handleOverHoursToggleChange = () => {
-    setSelectedOverTime(!selectedOverTime);
-  };
-
-  const handleBioStatusToggleChange = () => {
-    setSelectedBioStatus(!selectedBioStatus);
-  };
-
-  useEffect(() => {
-    return () => {
-      sessionStorage.removeItem('tabSelection');
-    };
-  }, []);
+    setLoading(loading);
+  }, [loading]);
 
   const onSummaryRecepientsPopupClose = () => {
     setSummaryRecepientsPopupOpen(false);
@@ -395,10 +348,43 @@ function WeeklySummariesReport() {
     checkForValidPwd(true);
   };
 
+  const toggleTab = tab => {
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+    }
+  };
+
+  useEffect(() => {
+    filterWeeklySummaries();
+    sessionStorage.setItem('tabSelection', activeTab);
+  }, [activeTab]);
+
+  const handleSelectCodeChange = event => {
+    setSelectedCodes(event);
+  };
+
+  const handleSelectColorChange = event => {
+    setSelectedColors(event);
+  };
+
+  useEffect(() => {
+    filterWeeklySummaries();
+    // console.log('filter works');
+  }, [selectedOverTime, selectedBioStatus, selectedCodes, selectedColors]);
+
+  const handleOverHoursToggleChange = () => {
+    setSelectedOverTime(prev => !prev);
+  };
+
+  const handleBioStatusToggleChange = () => {
+    setSelectedBioStatus(prev => !prev);
+  };
+  const error = props?.weeklySummariesReport?.error;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+  const authEmailWeeklySummaryRecipient = props?.userProfile?.email;
   const authorizedUser1 = process.env.REACT_APP_JAE;
   const authorizedUser2 = process.env.REACT_APP_SARA;
-  // console.log('error:', error);
+
   if (loading) {
     return (
       <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
