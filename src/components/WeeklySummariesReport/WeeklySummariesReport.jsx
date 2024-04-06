@@ -114,7 +114,7 @@ const weekDates = Array.from({ length: 4 }).map((_, index) => ({
 
 function WeeklySummariesReport() {
   const props = useSelector(state => state);
-  console.log('props', props);
+  // console.log('props', props);
 
   const authUser = useSelector(state => state?.auth?.user);
   const infoCollections = useSelector(state => state?.infoCollections?.infos);
@@ -372,12 +372,23 @@ function WeeklySummariesReport() {
     // console.log('filter works');
   }, [selectedOverTime, selectedBioStatus, selectedCodes, selectedColors]);
 
+  // const handleOverHoursToggleChange = () => {
+  //   setSelectedOverTime(prev => !prev);
+  // };
   const handleOverHoursToggleChange = () => {
-    setSelectedOverTime(prev => !prev);
+    setSelectedOverTime(prev => {
+      console.log('New selectedOverTime:', !prev); // 打印新状态值
+      return !prev;
+    });
   };
-
+  // const handleBioStatusToggleChange = () => {
+  //   setSelectedBioStatus(prev => !prev);
+  // };
   const handleBioStatusToggleChange = () => {
-    setSelectedBioStatus(prev => !prev);
+    setSelectedBioStatus(prev => {
+      console.log('New selectedBioStatus:', !prev); // 打印新状态值
+      return !prev;
+    });
   };
   const error = props?.weeklySummariesReport?.error;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
