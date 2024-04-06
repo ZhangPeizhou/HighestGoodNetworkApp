@@ -114,7 +114,6 @@ const weekDates = Array.from({ length: 4 }).map((_, index) => ({
 
 function WeeklySummariesReport() {
   const props = useSelector(state => state);
-  // console.log('props', props);
 
   const authUser = useSelector(state => state?.auth?.user);
   const infoCollections = useSelector(state => state?.infoCollections?.infos);
@@ -140,17 +139,13 @@ function WeeklySummariesReport() {
   const [teamCodes, setTeamCodes] = useState([]);
   const [colorOptions, setColorOptions] = useState([]);
   const [auth, setAuth] = useState([]);
-  const [selectedOverTime, setSelectedOverTime] = useState([false]);
-  const [selectedBioStatus, setSelectedBioStatus] = useState([false]);
+  const [selectedOverTime, setSelectedOverTime] = useState(false);
+  const [selectedBioStatus, setSelectedBioStatus] = useState(false);
 
   const [allRoleInfo, setAllRoleInfo] = useState([]);
   const [weeklyRecipientAuthPass, setWeeklyRecipientAuthPass] = useState(null);
 
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   console.log('Updated summaries:', summaries);
-  // }, [summaries]); // 这个 useEffect 会在 summaries 状态更新后执行
 
   useEffect(() => {
     const fetchData = async () => {
@@ -369,27 +364,16 @@ function WeeklySummariesReport() {
 
   useEffect(() => {
     filterWeeklySummaries();
-    // console.log('filter works');
   }, [selectedOverTime, selectedBioStatus, selectedCodes, selectedColors]);
 
-  // const handleOverHoursToggleChange = () => {
-  //   setSelectedOverTime(prev => !prev);
-  // };
   const handleOverHoursToggleChange = () => {
-    setSelectedOverTime(prev => {
-      console.log('New selectedOverTime:', !prev); // 打印新状态值
-      return !prev;
-    });
+    setSelectedOverTime(prev => !prev);
   };
-  // const handleBioStatusToggleChange = () => {
-  //   setSelectedBioStatus(prev => !prev);
-  // };
+
   const handleBioStatusToggleChange = () => {
-    setSelectedBioStatus(prev => {
-      console.log('New selectedBioStatus:', !prev); // 打印新状态值
-      return !prev;
-    });
+    setSelectedBioStatus(prev => !prev);
   };
+
   const error = props?.weeklySummariesReport?.error;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const authEmailWeeklySummaryRecipient = props?.userProfile?.email;
