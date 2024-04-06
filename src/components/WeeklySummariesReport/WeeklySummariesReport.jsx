@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
@@ -400,7 +401,6 @@ function WeeklySummariesReport() {
       </Container>
     );
   }
-
   return (
     <Container fluid className="bg--white-smoke py-3 mb-5">
       {passwordInputModalToggle()}
