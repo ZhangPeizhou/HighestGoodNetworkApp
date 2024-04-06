@@ -165,7 +165,7 @@ function WeeklySummariesReport() {
       setCanSeeBioHighlight(dispatch(hasPermission('highlightEligibleBios')));
 
       // 2. shallow copy and sort
-      let summariesCopy = [...(res.data ?? [])];
+      let summariesCopy = [...(res?.data ?? [])];
       summariesCopy = alphabetize(summariesCopy);
 
       //     // 3. add new key of promised hours by week
