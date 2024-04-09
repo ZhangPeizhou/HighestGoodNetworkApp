@@ -433,81 +433,87 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
-                      Best-case
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min="0"
-                        max="500"
-                        value={hoursBest}
-                        onChange={e => setHoursBest(e.target.value)}
-                        onBlur={() => calHoursEstimate()}
-                        id="bestCase"
-                        className="w-25"
-                      />,
-                      editable,
-                      hoursBest,
-                      {componentOnly:true}
-                    )}
+                  <div className="py-2">
+                    <div className="flex-responsive">
+                      <label htmlFor="bestCase" className="text-nowrap w-25 mr-auto">
+                        Best-case
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min="0"
+                          max="500"
+                          value={hoursBest}
+                          onChange={e => setHoursBest(e.target.value)}
+                          onBlur={() => calHoursEstimate()}
+                          id="bestCase"
+                          className="w-25"
+                        />,
+                        editable,
+                        hoursBest,
+                        {componentOnly:true}
+                      )}
+                    </div>
                     <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="py-2">
+                    <div className="flex-responsive">
+                      <label htmlFor="worstCase" className="text-nowrap w-25 mr-auto">
+                        Worst-case
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min={hoursBest}
+                          max="500"
+                          value={hoursWorst}
+                          onChange={e => setHoursWorst(e.target.value)}
+                          onBlur={() => calHoursEstimate('hoursWorst')}
+                          className="w-25"
+                        />,
+                        editable,
+                        hoursWorst,
+                        {componentOnly:true}
+                      )}
+                    </div>
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="py-2">
+                    <div className="flex-responsive">
+                      <label htmlFor="mostCase" className="text-nowrap w-25 mr-auto">
+                        Most-case
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min="0"
+                          max="500"
+                          value={hoursMost}
+                          onChange={e => setHoursMost(e.target.value)}
+                          onBlur={() => calHoursEstimate('hoursMost')}
+                          className="w-25"
+                        />,
+                        editable,
+                        hoursMost,
+                        {componentOnly:true}
+                      )}
+                    </div>
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
                         : ''}
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
-                      Worst-case
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min={hoursBest}
-                        max="500"
-                        value={hoursWorst}
-                        onChange={e => setHoursWorst(e.target.value)}
-                        onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="w-25"
-                      />,
-                      editable,
-                      hoursWorst,
-                      {componentOnly:true}
-                    )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
-                      Most-case
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min="0"
-                        max="500"
-                        value={hoursMost}
-                        onChange={e => setHoursMost(e.target.value)}
-                        onBlur={() => calHoursEstimate('hoursMost')}
-                        className="w-25"
-                      />,
-                      editable,
-                      hoursMost,
-                      {componentOnly:true}
-                    )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="Estimated" className="text-nowrap w-25 mr-auto">
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(

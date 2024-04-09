@@ -453,66 +453,72 @@ function AddTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" className="w-100">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
-                      Best-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursBest}
-                      onChange={e => setHoursBest(e.target.value)}
-                      onBlur={() => calHoursEstimate()}
-                      id="bestCase"
-                      className="w-25"
-                    />
+                  <div className="py-2">
+                    <div className="flex-responsive">
+                      <label htmlFor="bestCase" className="text-nowrap w-25 mr-auto" style={{ fontWeight: 'normal' }}>
+                        Best-case
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="500"
+                        value={hoursBest}
+                        onChange={e => setHoursBest(e.target.value)}
+                        onBlur={() => calHoursEstimate()}
+                        id="bestCase"
+                        className="w-25"
+                        />
+                      </div>
                     <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="py-2">
+                    <div className="flex-responsive">
+                      <label htmlFor="worstCase" className="text-nowrap  w-25 mr-auto" style={{ fontWeight: 'normal' }}>
+                        Worst-case
+                      </label>
+                      <input
+                        type="number"
+                        min={hoursBest}
+                        max="500"
+                        value={hoursWorst}
+                        onChange={e => setHoursWorst(e.target.value)}
+                        onBlur={() => calHoursEstimate('hoursWorst')}
+                        className="w-25"
+                      />
+                    </div>
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="py-2">
+                    <div className="flex-responsive">
+                      <label htmlFor="mostCase" className="text-nowrap w-25 mr-auto" style={{ fontWeight: 'normal' }}>
+                        Most-case
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="500"
+                        value={hoursMost}
+                        onChange={e => setHoursMost(e.target.value)}
+                        onBlur={() => calHoursEstimate('hoursMost')}
+                        className="w-25"
+                      />
+                    </div>
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
                         : ''}
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-auto" style={{ fontWeight: 'normal' }}>
-                      Worst-case
-                    </label>
-                    <input
-                      type="number"
-                      min={hoursBest}
-                      max="500"
-                      value={hoursWorst}
-                      onChange={e => setHoursWorst(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursWorst')}
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
-                      Most-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursMost}
-                      onChange={e => setHoursMost(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursMost')}
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
+                    <label htmlFor="Estimated" className="text-nowrap w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Estimated
                     </label>
                     <input
