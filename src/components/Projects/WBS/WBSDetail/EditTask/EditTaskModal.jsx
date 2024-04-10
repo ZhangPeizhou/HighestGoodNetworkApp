@@ -456,7 +456,7 @@ function EditTaskModal(props) {
                     </div>
                     <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        ? 'Best-case < Most-case < Worst-case'
                         : ''}
                     </div>
                   </div>
@@ -482,7 +482,7 @@ function EditTaskModal(props) {
                     </div>
                     <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        ? 'Best-case < Most-case < Worst-case'
                         : ''}
                     </div>
                   </div>
@@ -508,7 +508,7 @@ function EditTaskModal(props) {
                     </div>
                     <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Worst-case'
+                        ? 'Best-case < Most-case < Worst-case'
                         : ''}
                     </div>
                   </div>
