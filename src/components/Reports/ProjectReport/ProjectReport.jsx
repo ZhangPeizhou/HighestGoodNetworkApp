@@ -89,7 +89,7 @@ export function ProjectReport({ match }) {
     >
       <div className='project-header'>{projectName}</div> 
       <div className="wbs-and-members-blocks-wrapper">
-        <ReportPage.ReportBlock className="wbs-and-members-blocks">
+        <ReportPage.ReportBlock>
           <Paging totalElementsCount={wbs.WBSItems.length}>
             <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} />
           </Paging>
