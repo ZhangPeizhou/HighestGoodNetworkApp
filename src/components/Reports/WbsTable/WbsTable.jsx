@@ -51,7 +51,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS }) {
       >
         <div className="wbs-table-cell">#</div>
         <div className="wbs-table-cell">Name</div>
-        <div className="wbs-table-cell">Active</div>
+        <div className="wbs-table-cell wbs-table-active-column">Active</div>
         <div className="wbs-table-cell">ID</div>
       </div>
       <div>{WbsList.length > 0 ? WbsList : <Stub />}</div>

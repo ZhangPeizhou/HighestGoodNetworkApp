@@ -70,7 +70,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link className='project-member-table-name-column' to={`/userprofile/${member._id}`} title="View Profile">
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
@@ -120,7 +120,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div className="reports-table-head-members">
         <div className="reports-table-head-cell">#</div>
         <div className="reports-table-head-cell">Name</div>
-        <div className="reports-table-head-cell">Active</div>
+        <div className="reports-table-head-cell project-member-table-active-column">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
