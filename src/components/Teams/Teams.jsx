@@ -71,10 +71,11 @@ class Teams extends React.PureComponent {
 
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
+    const { teamsTable } = this.state;
 
     this.state.teams = this.teamTableElements(allTeams);
-    const numberOfTeams = allTeams.length;
-    const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
+    const numberOfTeams = teamsTable.length;
+    const numberOfActiveTeams = numberOfTeams ? teamsTable.filter(team => team.props.team.isActive).length : 0;
 
     return (
       <Container fluid className="teams-container">
@@ -358,6 +359,7 @@ class Teams extends React.PureComponent {
     } else {
       const postResponse = await this.props.postNewTeam(name, true);
       if (postResponse.status === 200) {
+        this.sortTeamsByModifiedDate();
         toast.success('Team added successfully');
       } else {
         toast.error(postResponse);
@@ -377,6 +379,7 @@ class Teams extends React.PureComponent {
   onDeleteUser = async deletedId => {
     const deleteResponse = await this.props.deleteTeam(deletedId, 'delete');
     if (deleteResponse.status === 200) {
+      this.sortTeamsByModifiedDate();
       toast.success('Team successfully deleted and user profiles updated');
     } else {
       toast.error(deleteResponse);
