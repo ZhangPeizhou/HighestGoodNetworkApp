@@ -55,7 +55,8 @@
 }
 
 .team-auto-complete:hover {
-  background: #1d62f0;
+  /* background: #1d62f0; */
+  background: #007BFF;
 }
 
 #myTabContent {
