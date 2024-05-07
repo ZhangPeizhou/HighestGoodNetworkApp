@@ -46,7 +46,8 @@
 
 .project-auto-complete:hover {
   /* background: #1d62f0; */
-  background: #007BFF;
+  /* background: #007BFF; */
+  background: #DDEBFF;
 }
 
 .team-auto-complete {
@@ -56,7 +57,8 @@
 
 .team-auto-complete:hover {
   /* background: #1d62f0; */
-  background: #007BFF;
+  /* background: #007BFF; */
+  background: #DDEBFF;
 }
 
 #myTabContent {
